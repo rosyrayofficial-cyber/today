@@ -66,7 +66,6 @@ h1{
   font-size:34px;line-height:41px;font-weight:700;letter-spacing:-.6px;background:var(--title);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .sub{margin-top:2px;font-size:15px;line-height:20px;letter-spacing:-.24px;color:var(--label2);display:flex;gap:8px;flex-wrap:wrap}
-.streak{color:var(--label);font-weight:500}
 .ringbtn{flex:none;width:44px;height:44px;margin-bottom:-2px;border:0;padding:0;background:none;cursor:pointer;touch-action:manipulation;border-radius:50%}
 #ringSpin,#ring{display:block;width:44px;height:44px}
 #ring circle{fill:none;stroke-width:7}
@@ -121,8 +120,6 @@ h1{
 @media (hover:hover){ .row:hover .del{opacity:1} .del:hover{color:#FF3B30} }
 .done .del{visibility:hidden}
 
-.empty{padding:26px 16px 24px;text-align:center;color:var(--label2);font-size:17px}
-.empty::after{content:"";position:absolute}
 
 .addrow{list-style:none}
 .addbtn{
@@ -203,7 +200,7 @@ h1{
   <div class="hin">
     <div>
       <h1>Today</h1>
-      <div class="sub"><span id="date"></span><span id="streak" class="streak" hidden></span></div>
+      <div class="sub"><span id="date"></span></div>
     </div>
     <button class="ringbtn" id="ringBtn" aria-label="Progress">
       <div id="ringSpin">
@@ -223,8 +220,7 @@ h1{
 
 <main class="wrap">
   <ul class="card" id="list">
-    <li class="empty" id="empty">No Reminders</li>
-    <li class="addrow">
+    <li class="addrow" id="addRow">
       <button class="addbtn" id="addBtn">
         <span class="plus"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="url(#silver)" stroke="rgba(0,0,0,.14)" stroke-width=".6"/><path d="M12 7v10M7 12h10" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round"/></svg></span>
         <span class="lbl">New Reminder</span>
@@ -256,7 +252,7 @@ const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${Stri
 const dayDiff = (a, b) => Math.round((new Date(b + 'T00:00') - new Date(a + 'T00:00')) / 864e5);
 const uid = () => Math.random().toString(36).slice(2, 10);
 
-let state = { tasks: [], day: todayStr(), done: 0, streak: { last: null, count: 0 }, sound: true };
+let state = { tasks: [], day: todayStr(), done: 0, sound: true };
 try {
   const s = JSON.parse(localStorage.getItem(KEY));
   if (s && Array.isArray(s.tasks)) state = Object.assign(state, s);
@@ -267,13 +263,6 @@ function rollDay() { const t = todayStr(); if (state.day !== t) { state.day = t;
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify({ ...state, tasks: state.tasks.filter(t => t.text.trim()) })); } catch (e) {}
 }
-function bumpStreak() {
-  const t = todayStr(), s = state.streak;
-  if (s.last === t) return;
-  s.count = (s.last && dayDiff(s.last, t) === 1) ? s.count + 1 : 1;
-  s.last = t;
-}
-function streakNow() { const s = state.streak; return s.last && dayDiff(s.last, todayStr()) <= 1 ? s.count : 0; }
 const liveTasks = () => state.tasks.filter(t => t.text.trim());
 rollDay();
 
@@ -457,8 +446,6 @@ const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 4);
 addEventListener('scroll', onScroll, { passive: true }); onScroll();
 function renderHeader() {
   $('#date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-  const s = streakNow(), el = $('#streak');
-  el.hidden = s < 2; el.textContent = `🔥 ${s}-day streak`;
 }
 
 /* ================= toast ================= */
@@ -471,16 +458,11 @@ function showToast(msg, withUndo) {
 }
 
 /* ================= list ================= */
-const list = $('#list'), emptyLi = $('#empty'), addBtn = $('#addBtn');
+const list = $('#list'), addRow = $('#addRow'), addBtn = $('#addBtn');
 let CE = 'true';
 try { const d = document.createElement('div'); d.contentEditable = 'plaintext-only'; if (d.contentEditable === 'plaintext-only') CE = 'plaintext-only'; } catch (e) {}
 
 const rows = () => [...list.querySelectorAll('.row')].filter(li => !li._gone);
-function updateEmpty() {
-  const has = rows().length > 0;
-  emptyLi.hidden = has;
-  emptyLi.textContent = state.done ? 'Nothing left today.' : 'No Reminders';
-}
 function focusEnd(el) {
   el.focus();
   const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
@@ -565,8 +547,8 @@ function newRow(after) {
   const i = after ? state.tasks.indexOf(after._task) : -1;
   if (i >= 0) state.tasks.splice(i + 1, 0, task); else state.tasks.push(task);
   const li = rowEl(task);
-  list.insertBefore(li, after && after.nextSibling ? after.nextSibling : emptyLi);
-  updateEmpty(); expand(li);
+  list.insertBefore(li, after && after.nextSibling ? after.nextSibling : addRow);
+  expand(li);
   li.querySelector('.text').focus();
   return li;
 }
@@ -575,7 +557,7 @@ function removeRow(li) {
   if (li._gone) return;
   li._gone = true;
   const i = state.tasks.indexOf(li._task); if (i >= 0) state.tasks.splice(i, 1);
-  save(); updateRing(); updateEmpty();
+  save(); updateRing();
   collapse(li, () => li.remove());
 }
 
@@ -593,7 +575,7 @@ function complete(li) {
 
   const idx = state.tasks.indexOf(task);
   if (idx >= 0) state.tasks.splice(idx, 1);
-  state.done++; bumpStreak(); save(); renderHeader();
+  state.done++; save(); renderHeader();
 
   const now = performance.now();
   combo = now - lastDone < 5000 ? combo + 1 : 0; lastDone = now;
@@ -612,7 +594,7 @@ function complete(li) {
   setTimeout(() => li.classList.add('struck'), 120);
   setTimeout(updateRing, 180);
   if (bloom) { list.classList.remove('shimmer'); void list.offsetWidth; list.classList.add('shimmer'); setTimeout(() => list.classList.remove('shimmer'), 1000); }
-  setTimeout(() => collapse(li, () => { li.remove(); updateEmpty(); }), 450);
+  setTimeout(() => collapse(li, () => { li.remove(); }), 450);
 
   undo = { task, idx, li };
   showToast(combo >= 2 ? `${combo + 1} in a row` : 'Completed', true);
@@ -630,8 +612,8 @@ undoBtn.addEventListener('click', () => {
   const next = state.tasks[i + 1];
   const nextLi = next && rows().find(r => r._task === next);
   const nl = rowEl(task);
-  list.insertBefore(nl, nextLi || emptyLi);
-  updateEmpty(); expand(nl); updateRing();
+  list.insertBefore(nl, nextLi || addRow);
+  expand(nl); updateRing();
   toast.classList.remove('show');
 });
 
@@ -691,10 +673,10 @@ addEventListener('keydown', e => {
 });
 
 /* ================= boot ================= */
-for (const t of state.tasks) list.insertBefore(rowEl(t), emptyLi);
-updateEmpty(); renderHeader();
+for (const t of state.tasks) list.insertBefore(rowEl(t), addRow);
+renderHeader();
 requestAnimationFrame(() => spring(ring, 'p', { from: 0, to: progress(), response: .9, damping: .8, eps: .0005, set: setRing }));
-setInterval(() => { const d = state.day; rollDay(); if (d !== state.day) { renderHeader(); updateEmpty(); updateRing(); } }, 60000);
+setInterval(() => { const d = state.day; rollDay(); if (d !== state.day) { renderHeader(); updateRing(); } }, 60000);
 
 window.__today = { state, freqLog };
 })();
