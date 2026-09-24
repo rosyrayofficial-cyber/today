@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#EEEEF1">
+<meta name="color-scheme" content="only light">
 <title>Today</title>
 <meta name="description" content="A tiny Apple-style to-do list that makes finishing tasks feel great.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -19,25 +19,14 @@
 :root{
   --bg:#F2F2F7; --card:#FFFFFF; --label:#000; --label2:rgba(60,60,67,.6); --label3:rgba(60,60,67,.3);
   --sep:rgba(60,60,67,.29); --accent:#1D1D1F; --accent2:#515154; --title:linear-gradient(180deg,#1D1D1F 30%,#6E6E73); --chrome:linear-gradient(100deg,#1D1D1F 0%,#86868B 45%,#C7C7CC 55%,#1D1D1F 100%); --bar:rgba(242,242,247,.78); --veil:rgba(242,242,247,.55);
-  --toast:rgba(28,28,30,.88); --shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05);
-  --track:rgba(250,17,79,.18);
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#000; --card:#1C1C1E; --label:#fff; --label2:rgba(235,235,245,.6); --label3:rgba(235,235,245,.3);
-    --sep:rgba(84,84,88,.65); --accent:#F5F5F7; --accent2:#C7C7CC; --title:linear-gradient(180deg,#FFFFFF 30%,#A1A1A6); --chrome:linear-gradient(100deg,#F5F5F7 0%,#86868B 45%,#FFFFFF 55%,#D2D2D7 100%); --bar:rgba(0,0,0,.72); --veil:rgba(0,0,0,.5);
-    --toast:rgba(58,58,60,.92); --shadow:none; --track:rgba(250,17,79,.26);
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#000; --card:#1C1C1E; --label:#fff; --label2:rgba(235,235,245,.6); --label3:rgba(235,235,245,.3);
-  --sep:rgba(84,84,88,.65); --accent:#F5F5F7; --accent2:#C7C7CC; --title:linear-gradient(180deg,#FFFFFF 30%,#A1A1A6); --chrome:linear-gradient(100deg,#F5F5F7 0%,#86868B 45%,#FFFFFF 55%,#D2D2D7 100%); --bar:rgba(0,0,0,.72); --veil:rgba(0,0,0,.5);
-  --toast:rgba(58,58,60,.92); --shadow:none; --track:rgba(250,17,79,.26);
+  --toast:rgba(255,255,255,.62); --shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05);
+  --track:rgba(60,60,67,.12);
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--label)}
+html{background:#E7E7EB;color-scheme:only light}
+html,body{margin:0;color:var(--label)}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",system-ui,sans-serif;
   font-size:17px;line-height:22px;letter-spacing:-.41px;
@@ -47,6 +36,18 @@ body{
 button{font:inherit;color:inherit;letter-spacing:inherit}
 button:focus-visible,.text:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:8px}
 
+/* ---------- silver sheet background ---------- */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:linear-gradient(160deg,#F7F7F9 0%,#E4E4E8 45%,#CFCFD4 100%)}
+.bg svg{position:absolute;inset:-6%;width:112%;height:112%}
+.bg .l{transform-box:view-box;animation:drift 26s ease-in-out infinite alternate}
+.bg .l2{animation-duration:31s;animation-delay:-8s}
+.bg .l3{animation-duration:37s;animation-delay:-15s}
+.bg .l4{animation-duration:43s;animation-delay:-21s}
+.bg .l5{animation-duration:49s;animation-delay:-4s}
+@keyframes drift{from{transform:translate3d(-14px,6px,0) rotate(-.35deg)}to{transform:translate3d(14px,-8px,0) rotate(.35deg)}}
+.bg::after{content:"";position:absolute;inset:0;background:radial-gradient(90% 60% at 20% 0%,rgba(255,255,255,.7),transparent 60%),radial-gradient(70% 50% at 100% 100%,rgba(120,120,130,.18),transparent 70%)}
+@media (prefers-reduced-motion:reduce){.bg .l{animation:none}}
+
 /* ---------- header (iOS large-title nav bar) ---------- */
 .spacer{height:clamp(20px,11vh,130px)}
 header{
@@ -55,7 +56,7 @@ header{
   transition:background-color .25s, box-shadow .25s;
 }
 header.scrolled{
-  background:var(--bar);
+  background:rgba(246,246,248,.55);
   -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
   box-shadow:0 .5px 0 var(--sep);
 }
@@ -76,7 +77,11 @@ h1{
 .wrap{max-width:560px;margin:0 auto;padding:6px 16px calc(140px + env(safe-area-inset-bottom))}
 .card{
   position:relative;isolation:isolate;list-style:none;margin:0;padding:0;
-  background:var(--card);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;
+  border:1.5px solid transparent;border-radius:24px;overflow:hidden;
+  background:linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.5)) padding-box,
+             linear-gradient(135deg,#FFFFFF 0%,#B9B9BF 22%,#F2F2F4 45%,#9C9CA2 70%,#E9E9EC 100%) border-box;
+  -webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(40,40,50,.08),0 30px 60px -24px rgba(50,50,65,.38),0 12px 24px -12px rgba(50,50,65,.18);
 }
 .card.shimmer::before{
   content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
@@ -86,7 +91,7 @@ h1{
 @keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
 
 .row{position:relative;display:flex;align-items:flex-start;min-height:44px}
-.row::after{content:"";position:absolute;left:52px;right:0;bottom:0;height:1px;background:var(--sep);transform:scaleY(.5);transform-origin:bottom}
+.row::after{content:"";position:absolute;left:52px;right:0;bottom:0;height:1px;background:rgba(60,60,67,.18);transform:scaleY(.5);transform-origin:bottom}
 .row.leaving{opacity:0;transition:opacity .28s ease}
 .row.entering{opacity:0}
 .row.entered{opacity:1;transition:opacity .3s ease}
@@ -134,17 +139,17 @@ h1{
 .toast{
   position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));z-index:40;
   display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);
-  padding:8px 8px 8px 18px;border-radius:999px;background:var(--toast);color:#fff;
+  padding:8px 8px 8px 18px;border-radius:999px;background:var(--toast);color:#1D1D1F;border:1px solid rgba(255,255,255,.85);
   -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
   font-size:15px;line-height:20px;letter-spacing:-.24px;font-weight:500;
-  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  box-shadow:0 12px 34px -8px rgba(50,50,65,.35),inset 0 1px 0 rgba(255,255,255,.9);
   transform:translate(-50%,160%);opacity:0;
   transition:transform .5s cubic-bezier(.2,.9,.25,1.12),opacity .3s;
 }
 .toast.show{transform:translate(-50%,0);opacity:1}
 .toast .msg{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
-.toast .undo{border:0;border-radius:999px;padding:6px 14px;background:rgba(255,255,255,.16);color:#F5F5F7;font-weight:600;cursor:pointer}
-.toast .undo:active{background:rgba(255,255,255,.28)}
+.toast .undo{border:0;border-radius:999px;padding:6px 14px;background:rgba(60,60,67,.08);color:#1D1D1F;font-weight:600;cursor:pointer}
+.toast .undo:active{background:rgba(60,60,67,.16)}
 .toast.nobtn{padding-right:18px}
 
 /* ---------- finale ---------- */
@@ -175,6 +180,23 @@ h1{
     <stop offset="0" stop-color="#FBFBFD"/><stop offset=".5" stop-color="#D2D2D7"/><stop offset="1" stop-color="#A1A1A6"/>
   </linearGradient>
 </defs></svg>
+<div class="bg" aria-hidden="true">
+<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="s1" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#FBFBFC"/><stop offset=".5" stop-color="#E2E2E6"/><stop offset="1" stop-color="#C4C4CA"/></linearGradient>
+    <linearGradient id="s2" x1=".1" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#F6F6F8"/><stop offset=".5" stop-color="#D6D6DB"/><stop offset="1" stop-color="#B3B3BA"/></linearGradient>
+    <linearGradient id="s3" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FDFDFE"/><stop offset=".5" stop-color="#E4E4E8"/><stop offset="1" stop-color="#BDBDC4"/></linearGradient>
+    <linearGradient id="s4" x1=".2" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#F2F2F5"/><stop offset=".5" stop-color="#CDCDD3"/><stop offset="1" stop-color="#A5A5AD"/></linearGradient>
+    <linearGradient id="s5" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FAFAFB"/><stop offset=".5" stop-color="#DCDCE0"/><stop offset="1" stop-color="#B8B8BF"/></linearGradient>
+    <filter id="sh" x="-10%" y="-20%" width="120%" height="140%"><feDropShadow dx="0" dy="-8" stdDeviation="16" flood-color="#3C3C46" flood-opacity=".22"/></filter>
+  </defs>
+  <g class="l l1" filter="url(#sh)"><path fill="url(#s1)" d="M-80 300C200 210 430 40 760 80S1260 120 1540 -20V980H-80Z"/><path fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" d="M-80 300C200 210 430 40 760 80S1260 120 1540 -20"/></g>
+  <g class="l l2" filter="url(#sh)"><path fill="url(#s2)" d="M-80 470C240 400 470 230 820 250S1300 250 1540 130V980H-80Z"/><path fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" d="M-80 470C240 400 470 230 820 250S1300 250 1540 130"/></g>
+  <g class="l l3" filter="url(#sh)"><path fill="url(#s3)" d="M-80 610C280 580 540 400 900 420S1330 420 1540 320V980H-80Z"/><path fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" d="M-80 610C280 580 540 400 900 420S1330 420 1540 320"/></g>
+  <g class="l l4" filter="url(#sh)"><path fill="url(#s4)" d="M-80 740C320 730 600 560 980 590S1360 600 1540 510V980H-80Z"/><path fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" d="M-80 740C320 730 600 560 980 590S1360 600 1540 510"/></g>
+  <g class="l l5" filter="url(#sh)"><path fill="url(#s5)" d="M-80 860C360 870 660 720 1040 750S1390 770 1540 700V980H-80Z"/><path fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" d="M-80 860C360 870 660 720 1040 750S1390 770 1540 700"/></g>
+</svg>
+</div>
 
 <div class="spacer"></div>
 <header id="hdr">
@@ -188,7 +210,7 @@ h1{
         <svg id="ring" viewBox="0 0 44 44" aria-hidden="true">
           <defs>
             <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#FA114F"/><stop offset="1" stop-color="#FF5E8A"/>
+              <stop offset="0" stop-color="#1D1D1F"/><stop offset=".55" stop-color="#6E6E73"/><stop offset="1" stop-color="#AEAEB2"/>
             </linearGradient>
           </defs>
           <circle class="track" cx="22" cy="22" r="17"/>
@@ -349,7 +371,7 @@ function resize() {
   W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resize(); addEventListener('resize', resize);
-const COLORS = ['#1D1D1F', '#6E6E73', '#A1A1A6', '#C7C7CC', '#E8E8ED', '#86868B', '#FA114F', '#FF5E8A'];
+const COLORS = ['#1D1D1F', '#6E6E73', '#A1A1A6', '#C7C7CC', '#E8E8ED', '#86868B', '#FFFFFF', '#D1D1D6'];
 const pick = () => COLORS[Math.random() * COLORS.length | 0];
 let parts = [], ripples = [], raf = 0, lastT = 0;
 function pill(x, y, w, h, r) {
@@ -404,12 +426,12 @@ function confetti() {
     const left = i % 2 === 0, a = (left ? -1 : -2.14) + (Math.random() - .5) * .5, sp = 900 + Math.random() * 900;
     parts.push({ x: left ? -10 : W + 10, y: H + 10, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 700, drag: 2.1,
       s: 4 + Math.random() * 3, shape: 2, r: Math.random() * 6, vr: (Math.random() - .5) * 12, flip: 6 + Math.random() * 12,
-      sway: 3 + Math.random() * 3, c: pick(), foil: Math.random() < .8, life: 0, max: 2.6 + Math.random() * 1.2 });
+      sway: 3 + Math.random() * 3, c: pick(), foil: Math.random() < .9, life: 0, max: 2.6 + Math.random() * 1.2 });
   }
   for (let i = 0; i < 90; i++) {        // gentle rain from the top edge
     parts.push({ x: Math.random() * W, y: -20 - Math.random() * 200, vx: (Math.random() - .5) * 60, vy: 80 + Math.random() * 120,
       g: 160, drag: .6, s: 3.5 + Math.random() * 3, shape: 2, r: Math.random() * 6, vr: (Math.random() - .5) * 8,
-      flip: 5 + Math.random() * 10, sway: 2 + Math.random() * 3, c: pick(), foil: Math.random() < .8, life: 0, max: 3 + Math.random() * 1.2 });
+      flip: 5 + Math.random() * 10, sway: 2 + Math.random() * 3, c: pick(), foil: Math.random() < .9, life: 0, max: 3 + Math.random() * 1.2 });
   }
   kick();
 }
@@ -423,7 +445,7 @@ function setRing(v) {
   arc.style.strokeDashoffset = CIRC * (1 - v);
   arc.style.opacity = v > .004 ? 1 : 0;
   const glow = v > .75 ? (v - .75) / .25 : 0;
-  ring.style.filter = glow ? `drop-shadow(0 0 ${2 + glow * 7}px rgba(250,17,79,${.2 + glow * .45}))` : 'none';
+  ring.style.filter = glow ? `drop-shadow(0 0 ${2 + glow * 7}px rgba(255,255,255,${.5 + glow * .5})) drop-shadow(0 2px ${2 + glow * 4}px rgba(40,40,50,${.12 + glow * .2}))` : 'none';
 }
 function progress() { const rem = liveTasks().length, tot = state.done + rem; return tot ? state.done / tot : 0; }
 const updateRing = () => spring(ring, 'p', { to: progress(), response: .7, damping: .78, eps: .0005, set: setRing });
