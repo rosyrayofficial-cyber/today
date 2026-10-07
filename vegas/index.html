@@ -34,7 +34,7 @@ html,body{margin:0;color:var(--txt)}
 body{
   font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:16px;line-height:22px;
   -webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;overflow-x:hidden;
-  background:radial-gradient(120% 70% at 50% 18%,#c0141b 0%,#7c0a10 38%,#3a0306 70%,#1a0102 100%) fixed;
+  background:radial-gradient(130% 26% at 50% 0%,rgba(112,42,176,.55),transparent 72%),radial-gradient(95% 58% at 50% 30%,#ff7a1a 0%,#e5281a 28%,#9a0e14 56%,#4a0509 82%,#1a0102 100%) fixed;
 }
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px}
@@ -49,7 +49,7 @@ a{color:var(--gold)}
 .spinning ~ .rays,.rays.fast{animation-duration:14s}
 @keyframes spinR{to{transform:rotate(360deg)}}
 .clouds{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.9;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='130' viewBox='0 0 180 130'%3E%3Cg fill='none' stroke='%23ffcf5a' stroke-opacity='.09' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 84c0-18 16-30 33-25 13 4 17 20 6 26-8 4-15-2-11-9'/%3E%3Cpath d='M58 80c11-16 38-16 47 2 7 13-4 27-18 22-9-3-9-14-1-15'/%3E%3Cpath d='M112 104c5-20 33-27 47-9 8 10 0 22-10 18'/%3E%3Cpath d='M96 30c6-12 26-14 33-2 4 8-3 16-10 12'/%3E%3C/g%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='130' viewBox='0 0 180 130'%3E%3Cg fill='none' stroke='%23ffa040' stroke-opacity='.16' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 84c0-18 16-30 33-25 13 4 17 20 6 26-8 4-15-2-11-9'/%3E%3Cpath d='M58 80c11-16 38-16 47 2 7 13-4 27-18 22-9-3-9-14-1-15'/%3E%3Cpath d='M112 104c5-20 33-27 47-9 8 10 0 22-10 18'/%3E%3Cpath d='M96 30c6-12 26-14 33-2 4 8-3 16-10 12'/%3E%3C/g%3E%3C/svg%3E");
   animation:drift 60s linear infinite}
 @keyframes drift{to{background-position:180px 130px}}
 canvas#amb{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
@@ -58,18 +58,19 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-event
 .flash.go{animation:flash .7s ease-out}
 @keyframes flash{0%{opacity:.95}100%{opacity:0}}
 
-/* lanterns */
-.lanterns{position:absolute;left:0;right:0;top:96px;height:0;z-index:1;pointer-events:none}
+/* lanterns (pink, like the artwork) */
+.lanterns{position:absolute;left:0;right:0;top:96px;height:0;z-index:6;pointer-events:none}
 .lantern{position:absolute;top:0;width:46px;transform-origin:50% 0;animation:sway 3.6s ease-in-out infinite alternate}
 .lantern .str{display:block;margin:0 auto;width:2px;height:var(--h,40px);background:linear-gradient(#d9a640,#8a5a10)}
-.lantern .cap{display:block;margin:0 auto;width:24px;height:7px;border-radius:3px;background:var(--goldgrad);box-shadow:0 1px 0 #5a2500}
-.lantern .body{position:relative;width:46px;height:54px;margin:-1px auto;border-radius:50%/46%;
-  background:radial-gradient(circle at 50% 42%,#ffe39a 0%,#ff6a3a 30%,#d10f17 62%,#6a0208 100%);
-  box-shadow:0 0 34px 10px rgba(255,90,40,.45),inset 0 0 0 1px rgba(255,210,120,.4)}
-.lantern .body::before{content:"";position:absolute;inset:3px 12px;border-radius:50%/46%;border-left:1.5px solid rgba(255,210,120,.45);border-right:1.5px solid rgba(255,210,120,.45)}
-.lantern .body::after{content:"福";position:absolute;inset:0;display:grid;place-items:center;font:900 18px/1 serif;color:rgba(255,224,140,.85)}
-.lantern .tas{display:block;margin:0 auto;width:4px;height:26px;background:linear-gradient(#ffd24a 0 6px,#ff2d2d 6px);border-radius:0 0 3px 3px}
+.lantern .cap{display:block;margin:0 auto;width:26px;height:7px;border-radius:3px;background:var(--goldgrad);box-shadow:0 1px 0 #5a2500}
+.lantern .body{position:relative;width:46px;height:50px;margin:-1px auto;border-radius:48%/40%;
+  background:linear-gradient(90deg,rgba(80,0,40,.35),transparent 28%,rgba(255,255,255,.3) 46%,transparent 64%,rgba(80,0,40,.4)),radial-gradient(circle at 50% 40%,#ffd6ec 0%,#ff7cb8 38%,#e0358f 68%,#8a1058 100%);
+  box-shadow:0 0 30px 8px rgba(255,90,170,.5),inset 0 0 0 1px rgba(255,225,240,.45);animation:lturn 4.2s ease-in-out infinite alternate}
+.lantern .body::before{content:"";position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(180deg,rgba(130,10,70,.3) 0 2px,transparent 2px 8px)}
+.lantern .tas{display:block;position:relative;margin:0 auto;width:3px;height:44px;background:linear-gradient(#ffd24a 0 6px,#ff5aa8 6px);border-radius:0 0 2px 2px}
+.lantern .tas::after{content:"";position:absolute;left:50%;bottom:-2px;width:11px;height:14px;margin-left:-5.5px;border-radius:2px 2px 50% 50%;background:linear-gradient(#ff7cb8,#c01870)}
 @keyframes sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes lturn{from{transform:scaleX(1)}to{transform:scaleX(.72)}}
 @media (max-width:520px){.lantern{transform:scale(.72)}.lantern.far{display:none}}
 
 #shakeWrap.shake{animation:shake .6s cubic-bezier(.36,.07,.19,.97) both}
@@ -80,12 +81,14 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-event
 
 /* ======== gold text ======== */
 .gold{
-  background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%),var(--goldgrad);
+  background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%),
+    linear-gradient(180deg,#fffbc8 0%,#ffe45a 28%,#ffc21a 47%,#ff9d00 50%,#ff8a00 72%,#e06a00 100%);
   background-size:300% 100%,100% 100%;background-position:160% 0,0 0;
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  -webkit-text-stroke:1.5px #4a1400;paint-order:stroke fill;
-  filter:drop-shadow(0 3px 0 #3a0e00) drop-shadow(0 0 10px rgba(255,190,40,.5));
+  -webkit-text-stroke:2.5px #2a0a00;paint-order:stroke fill;
+  filter:drop-shadow(0 2px 0 #7a2a00) drop-shadow(0 4px 0 #2a0a00) drop-shadow(0 0 12px rgba(255,190,40,.6));
   animation:shine 4.5s ease-in-out infinite}
+.gold.sm{-webkit-text-stroke:1.1px #2a0a00;filter:drop-shadow(0 2px 0 #7a2a00) drop-shadow(0 0 8px rgba(255,190,40,.5))}
 @keyframes shine{0%,55%{background-position:160% 0,0 0}100%{background-position:-60% 0,0 0}}
 
 /* ======== top bar ======== */
@@ -140,20 +143,40 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-event
 .tile.hit .in::after{opacity:1;animation:sweep 1s linear infinite}
 @keyframes hit{from{transform:scale(1);box-shadow:inset 0 0 0 2px #ffd35a,0 0 0 0 rgba(255,214,90,0)}to{transform:scale(1.07);box-shadow:inset 0 0 0 3px #fff6c9,0 0 18px 6px rgba(255,214,90,.95)}}
 @keyframes sweep{from{left:-60%}to{left:140%}}
-.em{font-size:calc(var(--t) * .54);line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.55));transform:translateY(-6%)}
-.suit{font:900 calc(var(--t) * .66)/1 Georgia,"Times New Roman",serif;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(255,255,255,.35))}
-.lbl{position:absolute;bottom:3px;left:0;right:0;text-align:center;font:calc(var(--t) * .2)/1 var(--fun);letter-spacing:.3px;color:#fff;-webkit-text-stroke:1.2px #3a0e00;paint-order:stroke fill;text-shadow:0 2px 0 #3a0e00}
-.s-W{background:radial-gradient(circle at 50% 35%,#fff7c0,#ffd24a 32%,#58a92a 75%,#245a0e)}
-.s-W .lbl{color:#fff6c9}
-.s-S{background:radial-gradient(circle at 50% 35%,#ffe0ef,#e2406a 45%,#5a1a8a 92%)}
-.s-B{background:radial-gradient(circle at 50% 35%,#d4f4ff,#3aa0e8 45%,#123d8a 92%)}
-.s-M{background:radial-gradient(circle at 50% 35%,#fff6d0,#f2b233 55%,#8a4a00)}
-.s-J{background:radial-gradient(circle at 50% 35%,#e3ffe9,#3fbf7a 50%,#0d5a33)}
-.s-P,.s-H,.s-D,.s-C{background:radial-gradient(circle at 50% 35%,#8a1d24,#3a0508 85%)}
-.s-P .suit{background-image:linear-gradient(#ffffff,#d6d0ff 40%,#6d5bd0)}
-.s-H .suit{background-image:linear-gradient(#ffe0e0,#ff3b3b 50%,#9a0010)}
-.s-D .suit{background-image:linear-gradient(#fff2b8,#ffb703 50%,#c45500)}
-.s-C .suit{background-image:linear-gradient(#e0f7ff,#36b3ff 50%,#0b4a9a)}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.lbl{position:absolute;bottom:1px;left:0;right:0;text-align:center;font:calc(var(--t) * .23)/1 var(--fun);letter-spacing:.2px;color:#fff;-webkit-text-stroke:2.4px #1c0800;paint-order:stroke fill;z-index:2}
+.s-S .lbl{color:#ffa0bd;font-size:calc(var(--t) * .185)}.s-B .lbl{color:#ffcc66}
+.s-W{background:radial-gradient(circle at 50% 36%,#f2ff7a,#8fd22e 45%,#2f8a1c 82%,#134a10)}
+.s-S{background:radial-gradient(circle at 50% 40%,#d9488f,#8a2aa8 56%,#3a1068)}
+.s-B{background:radial-gradient(circle at 50% 40%,#5cc4ff,#2070d8 58%,#0a2c80)}
+.s-M{background:radial-gradient(circle at 50% 40%,#ffe58a,#ff9d1a 60%,#8a3a00)}
+.s-J{background:radial-gradient(circle at 50% 40%,#7af0d0,#14a88a 60%,#064a46)}
+.s-P,.s-H,.s-D,.s-C{background:radial-gradient(circle at 50% 42%,#a8641a,#5a2408 70%,#2a0e04)}
+.in::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(circle at 6% 6%,#fff0a0 0 2px,#e0a020 2.6px,transparent 3.4px),radial-gradient(circle at 94% 6%,#fff0a0 0 2px,#e0a020 2.6px,transparent 3.4px),radial-gradient(circle at 6% 94%,#fff0a0 0 2px,#e0a020 2.6px,transparent 3.4px),radial-gradient(circle at 94% 94%,#fff0a0 0 2px,#e0a020 2.6px,transparent 3.4px)}
+.fan{transform-origin:50px 80px;animation:fansway 3s ease-in-out infinite alternate}
+@keyframes fansway{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+.tile.hit .fan{animation:fanflap .45s ease-in-out infinite alternate}
+@keyframes fanflap{from{transform:rotate(-10deg) scale(1)}to{transform:rotate(10deg) scale(1.06)}}
+.wingL,.wingR{transform-origin:55px 52px}
+.crane{transform-origin:50px 55px;animation:bob 2.4s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-2.5px) rotate(1.5deg)}}
+.tile.hit .wingL{animation:flapL .3s ease-in-out infinite alternate}
+.tile.hit .wingR{animation:flapR .3s ease-in-out infinite alternate}
+@keyframes flapL{to{transform:rotate(-14deg) scaleY(.8)}}
+@keyframes flapR{to{transform:rotate(14deg) scaleY(.8)}}
+.petals{transform-origin:50px 50px;animation:spinR 40s linear infinite}
+.tile.hit .petals{animation-duration:3s}
+.koi{animation:swim 2.6s ease-in-out infinite alternate}
+@keyframes swim{to{transform:translate(4px,-3px) rotate(6deg)}}
+.flower{transform-origin:50px 50px;animation:spinR 16s linear infinite}
+.tile.hit .flower{animation-duration:2.2s}
+.cn{transform-origin:50px 50px;animation:cflip2 3.4s ease-in-out infinite}
+@keyframes cflip2{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.55)}}
+.lant{transform-origin:50px 6px;animation:sway2 2.4s ease-in-out infinite alternate}
+@keyframes sway2{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+.strip.blur *{animation:none!important}
+.tile.flipw .in{animation:flipw .5s ease-in-out}
+@keyframes flipw{0%,100%{transform:rotateY(0)}50%{transform:rotateY(90deg) scale(1.1)}}
 .lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:3}
 .lines path{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .lines .glow{stroke:#ffd24a;stroke-width:10;opacity:.45;filter:blur(4px)}
@@ -196,8 +219,8 @@ button.meter{border:0;width:100%}
 .status{display:flex;align-items:center;justify-content:center;gap:8px;margin:20px auto 0;min-height:30px;padding:5px 14px;border-radius:15px;width:max-content;max-width:100%;
   background:rgba(20,0,2,.6);box-shadow:0 0 0 1.5px rgba(255,200,80,.5);font-size:13px;line-height:18px;color:var(--txt2);text-align:center}
 .status b{color:#fff}
-.status .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.machine.spinning .status .dot{animation:blink .5s infinite}
+.status .dot{flex:none;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b8,#ffc21a 50%,#b56100);box-shadow:0 0 8px var(--gold);animation:coinflip 1.6s linear infinite}
+.machine.spinning .status .dot{animation-duration:.45s}
 @keyframes blink{50%{opacity:.2}}
 .subrow{display:flex;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
 .pill{border:0;border-radius:20px;padding:8px 16px;font:800 13px/18px "Inter";letter-spacing:.5px;color:#ffe9b0;background:linear-gradient(#5a0509,#2a0204);box-shadow:0 0 0 1.5px #c98a1d,0 3px 0 #140001}
@@ -334,12 +357,66 @@ footer{margin-top:30px;text-align:center;font-size:12px;line-height:17px;color:v
 
 @media (max-width:380px){.ticker{font-size:42px;line-height:46px}.spin{width:96px;height:96px;font-size:26px}.plaque .logo{font-size:36px;line-height:42px}.wtitle{font-size:60px}.meter b{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.rays,.clouds,.lantern,.gold,.spin,.spin::after,.tape div{animation:none!important}.reveal{animation:none}}
+/* ===== v3: casino dressing ===== */
+.back{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.arch{position:fixed;top:-2%;bottom:-2%;width:46px;z-index:-1;pointer-events:none}
+.arch.l{left:0;border-radius:0 100% 100% 0/0 50% 50% 0;border-right:7px solid rgba(255,246,200,.95);box-shadow:inset -10px 0 22px rgba(255,214,90,.8),10px 0 36px rgba(255,190,60,.55)}
+.arch.r{right:0;border-radius:100% 0 0 100%/50% 0 0 50%;border-left:7px solid rgba(255,246,200,.95);box-shadow:inset 10px 0 22px rgba(255,214,90,.8),-10px 0 36px rgba(255,190,60,.55)}
+.medbg{position:absolute;width:320px;height:320px;opacity:.2;animation:spinR 60s linear infinite}
+.medbg svg{width:100%;height:100%;display:block}
+.cwrap{position:absolute;width:var(--s);height:var(--s);perspective:700px;animation:cfloat var(--f,6s) ease-in-out infinite alternate}
+.coin3d{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#fffbd2 0%,#ffe36a 22%,#ffb800 54%,#c96a00 84%,#8a4000 100%);
+  box-shadow:inset 0 0 0 calc(var(--s) * .055) #ffd24a,inset 0 0 0 calc(var(--s) * .09) #b86a00,inset 0 0 calc(var(--s) * .16) rgba(255,255,255,.55),0 0 calc(var(--s) * .4) rgba(255,180,40,.5);
+  animation:cflip var(--d,3.4s) linear infinite}
+.coin3d::before{content:"";position:absolute;inset:16%;border-radius:50%;border:calc(var(--s) * .03) solid rgba(160,80,0,.55);background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.35),transparent 60%)}
+.coin3d::after{content:"福";position:absolute;inset:0;display:grid;place-items:center;font:900 calc(var(--s) * .34)/1 serif;color:rgba(150,70,0,.55)}
+@keyframes cflip{from{transform:rotateY(0) rotateZ(var(--r,0deg))}to{transform:rotateY(360deg) rotateZ(var(--r,0deg))}}
+@keyframes cfloat{from{transform:translateY(-10px)}to{transform:translateY(12px)}}
+.fcoins{position:absolute;inset:0;pointer-events:none;z-index:8}
+.deco-fan{position:absolute;width:88px;height:88px;z-index:5;pointer-events:none;top:-76px}
+.deco-fan svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.deco-fan.l{left:-30px;transform:rotate(-24deg)}
+.deco-fan.r{right:-30px;transform:scaleX(-1) rotate(-24deg)}
+.deco-fan .fan{animation:dfan 3s ease-in-out infinite alternate}
+@keyframes dfan{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+.spin{isolation:isolate}
+.spin::before{content:"";position:absolute;inset:0;border-radius:50%;z-index:-1;background:conic-gradient(from 0deg,transparent 0 58%,rgba(255,255,255,.85) 76%,transparent 92%);animation:spinR 3.4s linear infinite}
+.machine.spinning .spin::before{animation-duration:.45s}
+.machine.spinning .spin::after{animation-duration:1.2s}
+.ribbon{font:22px/26px var(--fun);letter-spacing:2px;color:inherit;text-shadow:none;margin:0 0 6px;display:flex;justify-content:center;height:28px}
+.ribbon .rt{display:inline-block;animation:ribpop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes ribpop{from{transform:scale(.3) rotate(-6deg);opacity:0}}
+.section-h::before,.section-h::after{display:inline-block;animation:spinY 2.6s linear infinite}
+@keyframes spinY{to{transform:rotateY(360deg)}}
+.medal::before{content:"";position:absolute;inset:-9px;border-radius:50%;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 55%,rgba(255,244,170,.95) 75%,transparent 90%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8.5px));animation:spinR 3s linear infinite}
+.coinbtn.flip{animation:coinflip .6s}
+@keyframes coinflip{to{transform:rotateY(360deg)}}
+.winov .wflower{position:absolute;left:50%;top:44%;width:min(112vw,540px);height:min(112vw,540px);margin:calc(min(112vw,540px) / -2) 0 0 calc(min(112vw,540px) / -2);opacity:.55;animation:spinR 20s linear infinite;pointer-events:none;color:#ffd24a}
+@media (prefers-reduced-motion:reduce){.cwrap,.coin3d,.medbg,.fan,.petals,.koi,.flower,.crane,.wingL,.wingR,.lant,.cn,.lantern .body,.deco-fan .fan,.spin::before,.medal::before,.ribbon .rt,.winov .wflower,.section-h::before,.section-h::after,.status .dot{animation:none!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gFanA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffdf85"/><stop offset="1" stop-color="#fff9de"/></linearGradient>
+  <linearGradient id="gFanB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffc85a"/><stop offset="1" stop-color="#ffe9ab"/></linearGradient>
+  <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffc21a"/><stop offset="1" stop-color="#9a4b00"/></linearGradient>
+  <linearGradient id="gSpade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#d8d3ff"/><stop offset="1" stop-color="#8f86dc"/></linearGradient>
+  <linearGradient id="gHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0d6"/><stop offset=".5" stop-color="#ff3b4a"/><stop offset="1" stop-color="#9a0020"/></linearGradient>
+  <linearGradient id="gDia" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2b8"/><stop offset=".5" stop-color="#ffb703"/><stop offset="1" stop-color="#c45500"/></linearGradient>
+  <linearGradient id="gClub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6f9ff"/><stop offset=".5" stop-color="#36b3ff"/><stop offset="1" stop-color="#0b4a9a"/></linearGradient>
+  <linearGradient id="gPetal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d85a00"/><stop offset=".55" stop-color="#ffa81c"/><stop offset="1" stop-color="#ffe27a"/></linearGradient>
+  <linearGradient id="gPetal2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f07a00"/><stop offset=".6" stop-color="#ffc030"/><stop offset="1" stop-color="#fff0a0"/></linearGradient>
+  <radialGradient id="gLant" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#ffd6ec"/><stop offset=".4" stop-color="#ff7cb8"/><stop offset=".7" stop-color="#e0358f"/><stop offset="1" stop-color="#8a1058"/></radialGradient>
+  <g id="flw" fill="#f39a2e" opacity=".92"><circle cx="2.4" cy="0" r="2.1"/><circle cx=".74" cy="2.28" r="2.1"/><circle cx="-1.94" cy="1.41" r="2.1"/><circle cx="-1.94" cy="-1.41" r="2.1"/><circle cx=".74" cy="-2.28" r="2.1"/><circle r="1" fill="#ffe08a"/></g>
+  <symbol id="flowerFrame" viewBox="0 0 100 100"><g fill="rgba(255,214,110,.16)" stroke="currentColor" stroke-width="3"><circle cx="76" cy="50" r="15"/><circle cx="63" cy="72.5" r="15"/><circle cx="37" cy="72.5" r="15"/><circle cx="24" cy="50" r="15"/><circle cx="37" cy="27.5" r="15"/><circle cx="63" cy="27.5" r="15"/></g><circle cx="50" cy="50" r="27" fill="rgba(30,6,0,.5)"/></symbol>
+</defs></svg>
 <div class="rays" id="rays"></div>
 <div class="clouds"></div>
 <canvas id="amb"></canvas>
+<div class="arch l"></div><div class="arch r"></div>
+<div class="back" id="back"></div>
 
 <div id="shakeWrap">
 <main class="wrap">
@@ -364,19 +441,24 @@ footer{margin-top:30px;text-align:center;font-size:12px;line-height:17px;color:v
     <div class="roof" aria-hidden="true">
       <svg viewBox="0 0 400 96" preserveAspectRatio="none">
         <defs>
-          <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d0161e"/><stop offset="1" stop-color="#5c0408"/></linearGradient>
+          <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4ae0"/><stop offset=".55" stop-color="#4a1d9a"/><stop offset="1" stop-color="#220a52"/></linearGradient>
           <linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffc21a"/><stop offset="1" stop-color="#9a4b00"/></linearGradient>
-          <pattern id="tiles" width="14" height="10" patternUnits="userSpaceOnUse"><path d="M0 10 Q7 0 14 10" fill="none" stroke="#3a0204" stroke-width="1.6" opacity=".55"/></pattern>
+          <pattern id="tiles" width="16" height="12" patternUnits="userSpaceOnUse"><path d="M0 12Q8 0 16 12" fill="none" stroke="#d2b4ff" stroke-width="1.6" opacity=".55"/><path d="M-8 6Q0 -6 8 6M8 6Q16 -6 24 6" fill="none" stroke="#1a0640" stroke-width="1.2" opacity=".5"/></pattern>
         </defs>
-        <path d="M0 86 Q40 84 70 62 L110 34 L290 34 L330 62 Q360 84 400 86 L400 96 L0 96 Z" fill="url(#rg)"/>
-        <path d="M0 86 Q40 84 70 62 L110 34 L290 34 L330 62 Q360 84 400 86 L400 96 L0 96 Z" fill="url(#tiles)"/>
-        <path d="M0 86 Q40 84 70 62 L110 34 L290 34 L330 62 Q360 84 400 86" fill="none" stroke="url(#gg)" stroke-width="4"/>
-        <path d="M96 34 Q200 18 304 34" fill="none" stroke="url(#gg)" stroke-width="5"/>
-        <circle cx="96" cy="34" r="5" fill="url(#gg)"/><circle cx="304" cy="34" r="5" fill="url(#gg)"/>
-        <path d="M-4 90 Q-10 76 4 72" fill="none" stroke="url(#gg)" stroke-width="4"/><path d="M404 90 Q410 76 396 72" fill="none" stroke="url(#gg)" stroke-width="4"/>
+        <path d="M0 86Q40 84 70 62L110 34H290L330 62Q360 84 400 86V96H0Z" fill="url(#rg)"/>
+        <path d="M0 86Q40 84 70 62L110 34H290L330 62Q360 84 400 86V96H0Z" fill="url(#tiles)"/>
+        <path d="M0 86Q40 84 70 62L110 34H290L330 62Q360 84 400 86" fill="none" stroke="url(#gg)" stroke-width="4"/>
+        <path d="M96 34Q200 18 304 34" fill="none" stroke="url(#gg)" stroke-width="5"/>
+        <g fill="url(#gg)" stroke="#6a3200" stroke-width=".8">
+          <circle cx="12" cy="89" r="4.5"/><circle cx="36" cy="89" r="4.5"/><circle cx="60" cy="87" r="4.5"/><circle cx="84" cy="89" r="4.5"/><circle cx="108" cy="89" r="4.5"/><circle cx="132" cy="89" r="4.5"/><circle cx="156" cy="89" r="4.5"/><circle cx="180" cy="89" r="4.5"/><circle cx="204" cy="89" r="4.5"/><circle cx="228" cy="89" r="4.5"/><circle cx="252" cy="89" r="4.5"/><circle cx="276" cy="89" r="4.5"/><circle cx="300" cy="89" r="4.5"/><circle cx="324" cy="89" r="4.5"/><circle cx="340" cy="87" r="4.5"/><circle cx="364" cy="89" r="4.5"/><circle cx="388" cy="89" r="4.5"/>
+          <circle cx="96" cy="34" r="5"/><circle cx="304" cy="34" r="5"/>
+        </g>
+        <g fill="none" stroke="url(#gg)" stroke-width="3.2" stroke-linecap="round"><path d="M104 34Q90 22 104 13Q116 8 120 20"/><path d="M296 34Q310 22 296 13Q284 8 280 20"/><path d="M-4 90Q-10 76 4 72"/><path d="M404 90Q410 76 396 72"/></g>
+        <g fill="url(#gg)"><circle cx="120" cy="20" r="3"/><circle cx="280" cy="20" r="3"/></g>
       </svg>
     </div>
     <div class="plaque"><div class="logo gold">VEGAS</div><span class="sub">★ FORTUNE SWING ★</span></div>
+    <div class="fcoins" id="fcoins" aria-hidden="true"></div>
 
     <div class="frame">
       <div class="bulbs" id="bulbs"></div>
@@ -384,7 +466,7 @@ footer{margin-top:30px;text-align:center;font-size:12px;line-height:17px;color:v
       <div class="corner tr"><svg viewBox="0 0 26 26"><path d="M2 24V8a6 6 0 0 1 6-6h16" fill="none" stroke="#fff3b0" stroke-width="3"/><circle cx="8" cy="8" r="4" fill="#ffc21a" stroke="#7a3d00"/></svg></div>
       <div class="corner bl"><svg viewBox="0 0 26 26"><path d="M2 24V8a6 6 0 0 1 6-6h16" fill="none" stroke="#fff3b0" stroke-width="3"/><circle cx="8" cy="8" r="4" fill="#ffc21a" stroke="#7a3d00"/></svg></div>
       <div class="corner br"><svg viewBox="0 0 26 26"><path d="M2 24V8a6 6 0 0 1 6-6h16" fill="none" stroke="#fff3b0" stroke-width="3"/><circle cx="8" cy="8" r="4" fill="#ffc21a" stroke="#7a3d00"/></svg></div>
-      <div class="ribbon">✦ 5 REELS · 1 PICK · 90 DAYS ✦</div>
+      <div class="ribbon" id="rib" aria-hidden="true"></div>
       <div class="reels" id="reels">
         <div class="reel"><div class="strip"></div></div>
         <div class="reel"><div class="strip"></div></div>
@@ -428,6 +510,7 @@ footer{margin-top:30px;text-align:center;font-size:12px;line-height:17px;color:v
 <div class="flash" id="flash"></div>
 <div class="winov" id="winov" hidden>
   <div class="wrays"></div>
+  <svg class="wflower" viewBox="0 0 100 100" aria-hidden="true"><use href="#flowerFrame" width="100" height="100"/></svg>
   <div class="winbox">
     <div class="wtitle gold" id="wTitle">MEGA WIN</div>
     <div class="wtick gold" id="wTick">—</div>
@@ -1026,7 +1109,7 @@ const A = {
   click(){ if (!this.ok()) return; this.noiseHit(0, .04, 3500, .3); this.tone(1400, 0, .06, {vol: .08}); },
   lever(){ if (!this.ok()) return; this.noiseHit(0, .12, 900, .4); this.tone(140, 0, .25, {type: "triangle", vol: .35, to: 60}); this.noiseHit(.18, .08, 2400, .25); },
   stop(k){ if (!this.ok()) return; this.tone(120 + k * 10, 0, .22, {type: "sine", vol: .45, to: 45}); this.noiseHit(0, .05, 2000 + k * 300, .35); this.bell(660 + k * 110, .02, .25, .04); },
-  coin(){ if (!this.ok()) return; const f = rnd(2300, 3200); this.tone(f, 0, .18, {vol: .07}); this.tone(f * 1.5, .01, .14, {vol: .04}); },
+  coin(){ if (!this.ok()) return; this.coinClink(0, 1); },
   gong(t = 0){
     if (!this.ok()) return;
     [1, 1.47, 2.09, 2.56, 3.18, 4.1].forEach((m, k) => this.tone(68 * m, t, 4 - k * .4, {vol: .22 / (k + 1), attack: .01}));
@@ -1077,6 +1160,9 @@ const A = {
     this.musicTimer = setInterval(() => {
       while (next < c.currentTime + .2){
         if (step % 16 === 0) this.tone(73.42, next - c.currentTime, 2.4, {type: "triangle", vol: .05, dest: this.mus});
+        if (step % 16 === 0) this.tone(100, next - c.currentTime, .4, {vol: .05, to: 52, dest: this.mus});
+        if (step % 4 === 2) this.noiseHit(next - c.currentTime, .025, 1800, .03);
+        if (Math.random() < .03) this.coinClink(next - c.currentTime, .18);
         if (step % 8 === 4) this.tone(110, next - c.currentTime, 1.2, {type: "triangle", vol: .035, dest: this.mus});
         if (Math.random() < (step % 2 ? .35 : .8)){
           note = clamp(note + pick([-2, -1, -1, 1, 1, 2, 0]), 0, scale.length - 1);
@@ -1088,6 +1174,49 @@ const A = {
         next += beat; step++;
       }
     }, 40);
+  },
+  coinClink(t = 0, vol = 1){
+    const f = rnd(2600, 3700);
+    [[1, .07], [1.52, .05], [2.36, .032], [3.1, .02]].forEach(([m, v], i) => this.tone(f * m, t, .24 - i * .04, {vol: v * vol}));
+    this.noiseHit(t, .014, 7200, .07 * vol, "highpass");
+  },
+  coinCascade(n = 16, span = 2){
+    if (!this.ok()) return;
+    for (let i = 0; i < n; i++) this.coinClink(Math.pow(i / n, 1.4) * span + rnd(0, .05), .55 + Math.random() * .4);
+    this.tray(span * .3);
+  },
+  tray(t = 0){ if (!this.ok()) return; for (let i = 0; i < 9; i++) this.noiseHit(t + i * .035 + rnd(0, .02), .03, rnd(5000, 9000), .08, "bandpass", 4); },
+  rollTick(i = 0){ if (!this.ok()) return; this.tone(700 + (i % 16) * 55, 0, .05, {type: "square", vol: .028}); },
+  insert(){ if (!this.ok()) return; this.coinClink(0, 1); this.noiseHit(.09, .09, 700, .22); this.tone(260, .1, .14, {type: "triangle", vol: .22, to: 120}); },
+  whoosh(dur = .5, from = 500, to = 3500, vol = .1){
+    if (!this.ok()) return;
+    const c = this.ctx, T = c.currentTime, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = this.noise; f.type = "bandpass"; f.Q.value = 2; f.frequency.setValueAtTime(from, T); f.frequency.exponentialRampToValueAtTime(to, T + dur);
+    g.gain.setValueAtTime(0, T); g.gain.linearRampToValueAtTime(vol, T + dur * .4); g.gain.exponentialRampToValueAtTime(.0001, T + dur);
+    s.connect(f).connect(g).connect(this.sfx); s.start(T, Math.random()); s.stop(T + dur + .05);
+  },
+  whistle(){ if (!this.ok()) return; this.tone(1100, 0, .45, {vol: .035, to: 3200}); },
+  boom(t = 0){ if (!this.ok()) return; this.noiseHit(t, .5, 500, .4, "lowpass"); this.tone(90, t, .45, {type: "sine", vol: .35, to: 30}); },
+  shimmer(k = 0){
+    if (!this.ok()) return;
+    const base = [523.25, 587.33, 659.25, 783.99, 880][k % 5];
+    this.whoosh(.35, 1500, 7000, .06); [1, 1.5, 2, 3].forEach((m, i) => this.bell(base * m, i * .05, .9, .06));
+  },
+  crane(){ if (!this.ok()) return; this.tone(1568, 0, .5, {vol: .06}); this.tone(2349, .08, .6, {vol: .05}); this.bell(1318, 0, .9, .06); },
+  lotus(){ if (!this.ok()) return; [440, 554.37, 659.25, 880].forEach((f, i) => this.tone(f, i * .06, .5, {type: "triangle", vol: .07})); },
+  drumroll(dur){
+    if (!this.ok()) return;
+    let t = 0, gap = .11;
+    while (t < dur){ this.noiseHit(t, .07, 1800, .13 + t / dur * .15, "bandpass", .8); this.tone(180, t, .08, {type: "triangle", vol: .05}); t += gap; gap = Math.max(.035, gap * .93); }
+    this.noiseHit(dur, .5, 2500, .3);
+  },
+  taiko(t = 0){ if (!this.ok()) return; this.tone(150, t, .35, {type: "sine", vol: .55, to: 48}); this.noiseHit(t, .08, 900, .5, "bandpass", .7); this.tone(95, t, .5, {type: "triangle", vol: .3, to: 40}); },
+  applause(dur = 3){
+    if (!this.ok()) return;
+    const c = this.ctx, T = c.currentTime, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+    s.buffer = this.noise; s.loop = true; f.type = "bandpass"; f.frequency.value = 2600; f.Q.value = .5; lfo.frequency.value = 9; lg.gain.value = .05; lfo.connect(lg).connect(g.gain);
+    g.gain.setValueAtTime(0, T); g.gain.linearRampToValueAtTime(.09, T + .4); g.gain.setValueAtTime(.09, T + dur - .8); g.gain.linearRampToValueAtTime(0, T + dur);
+    s.connect(f).connect(g).connect(this.sfx); s.start(T); lfo.start(T); s.stop(T + dur + .05); lfo.stop(T + dur + .05);
   },
   musicOff(){ clearInterval(this.musicTimer); this.musicTimer = null; }
 };
@@ -1106,7 +1235,7 @@ const FX = (() => {
     ax.setTransform(dpr, 0, 0, dpr, 0, 0); fxx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   size(); addEventListener("resize", size);
-  for (let k = 0; k < 46; k++) motes.push({x: Math.random() * W, y: Math.random() * H, r: rnd(.6, 2.2), vy: rnd(.15, .6), ph: Math.random() * 6, bok: k < 10});
+  for (let k = 0; k < 72; k++) motes.push({x: Math.random() * W, y: Math.random() * H, r: rnd(.6, 2.2), vy: rnd(.15, .6), ph: Math.random() * 6, bok: k < 10, e: k >= 46});
   let boost = 0;
   function star(ctx, x, y, r, a){
     ctx.globalAlpha = a; ctx.beginPath();
@@ -1117,14 +1246,14 @@ const FX = (() => {
     ax.clearRect(0, 0, W, H);
     ax.globalCompositeOperation = "lighter";
     for (const m of motes){
-      m.y -= m.vy * (1 + boost * 4); m.x += Math.sin(t / 1400 + m.ph) * .25;
+      m.y -= m.vy * (m.e ? 1.8 : 1) * (1 + boost * 4); m.x += Math.sin(t / 1400 + m.ph) * .25;
       if (m.y < -20){ m.y = H + 20; m.x = Math.random() * W; }
       const tw = .5 + .5 * Math.sin(t / 300 + m.ph * 3);
       if (m.bok){
         const g = ax.createRadialGradient(m.x, m.y, 0, m.x, m.y, 22 * m.r);
         g.addColorStop(0, "rgba(255,210,90,.16)"); g.addColorStop(1, "rgba(255,210,90,0)");
         ax.globalAlpha = 1; ax.fillStyle = g; ax.beginPath(); ax.arc(m.x, m.y, 22 * m.r, 0, 7); ax.fill();
-      } else { ax.fillStyle = "#ffe9a0"; star(ax, m.x, m.y, m.r, .25 + .6 * tw); }
+      } else { ax.fillStyle = m.e ? "#ff9d3a" : "#ffe9a0"; star(ax, m.x, m.y, m.r, .25 + .6 * tw); }
     }
     ax.globalAlpha = 1; ax.globalCompositeOperation = "source-over";
     boost *= .97;
@@ -1139,6 +1268,31 @@ const FX = (() => {
     if (w > p.r * .4){ fxx.strokeStyle = "rgba(122,61,0,.7)"; fxx.lineWidth = 1.2; fxx.beginPath(); fxx.ellipse(0, 0, w * .7, p.r * .7, 0, 0, 7); fxx.stroke(); }
     fxx.restore();
   }
+  const fanSprite = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 256; const g = c.getContext("2d");
+    const px = 128, py = 198, R = 118, a0 = -Math.PI * .81, a1 = -Math.PI * .19, n = 10;
+    for (let i = 0; i < n; i++){
+      const t0 = a0 + (a1 - a0) * i / n, t1 = a0 + (a1 - a0) * (i + 1) / n;
+      g.beginPath(); g.moveTo(px, py); g.arc(px, py, R, t0, t1); g.closePath();
+      const gr = g.createLinearGradient(px, py, px, py - R); gr.addColorStop(0, i % 2 ? "#ffcf6a" : "#ffe08a"); gr.addColorStop(1, i % 2 ? "#ffe9ae" : "#fffbe6"); g.fillStyle = gr; g.fill();
+    }
+    for (const [r, a] of [[92, -.74], [92, -.5], [92, -.26], [62, -.62], [62, -.38], [36, -.5]]){
+      const cx = px + r * Math.cos(a * Math.PI), cy = py + r * Math.sin(a * Math.PI);
+      g.fillStyle = "rgba(240,140,30,.82)"; for (let k = 0; k < 5; k++){ g.beginPath(); g.arc(cx + 8 * Math.cos(k * 1.2566), cy + 8 * Math.sin(k * 1.2566), 7, 0, 7); g.fill(); }
+      g.fillStyle = "#ffe08a"; g.beginPath(); g.arc(cx, cy, 3.5, 0, 7); g.fill();
+    }
+    g.strokeStyle = "#6a4a14"; g.lineWidth = 1.8;
+    for (let i = 0; i <= n; i++){ const a = a0 + (a1 - a0) * i / n; g.beginPath(); g.moveTo(px, py); g.lineTo(px + R * Math.cos(a), py + R * Math.sin(a)); g.stroke(); }
+    g.strokeStyle = "#e8a020"; g.lineWidth = 6; g.beginPath(); g.arc(px, py, R, a0, a1); g.stroke();
+    g.fillStyle = "#26340f"; g.beginPath(); g.moveTo(px, py); g.arc(px, py, 34, a0, a1); g.closePath(); g.fill();
+    g.strokeStyle = "#d8c030"; g.lineWidth = 2;
+    for (let i = 0; i <= n; i++){ const a = a0 + (a1 - a0) * i / n; g.beginPath(); g.moveTo(px, py); g.lineTo(px + 34 * Math.cos(a), py + 34 * Math.sin(a)); g.stroke(); }
+    g.fillStyle = "#ffc21a"; g.strokeStyle = "#7a3d00"; g.beginPath(); g.arc(px, py, 9, 0, 7); g.fill(); g.stroke();
+    g.lineCap = "round";
+    for (const [col, w] of [["#f5b82a", 7], ["#fff0a0", 2]]){ g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(px, py); g.bezierCurveTo(px - 30, py + 26, px - 70, py + 10, px - 82, py + 36); g.stroke(); }
+    g.fillStyle = "#f5b82a"; g.beginPath(); g.moveTo(px - 90, py + 34); g.lineTo(px - 74, py + 34); g.lineTo(px - 78, py + 54); g.lineTo(px - 86, py + 54); g.closePath(); g.fill();
+    return c;
+  })();
   function step(){
     fxx.clearRect(0, 0, W, H);
     for (let k = parts.length - 1; k >= 0; k--){
@@ -1149,6 +1303,22 @@ const FX = (() => {
         p.rot += p.vr;
         if (p.y > H - p.r && p.vy > 0 && p.bounce){ p.vy *= -.45; p.vx *= .7; p.bounce--; if (Math.random() < .25) A.coin(); }
         fxx.globalAlpha = Math.min(1, p.life * 2); coinDraw(p);
+      } else if (p.type === "fan"){
+        p.age += 1 / 60; const t = clamp(p.age / p.dur, 0, 1), e = 1 - Math.pow(1 - t, 2.4), u = 1 - e;
+        p.x = u * u * p.x0 + 2 * u * e * p.cx + e * e * p.x1; p.y = u * u * p.y0 + 2 * u * e * p.cy + e * e * p.y1; p.rot = p.r0 + p.spin * e;
+        if (t < 1){ p.trail.push([p.x, p.y]); if (p.trail.length > 30) p.trail.shift(); } else if (p.trail.length) p.trail.shift();
+        fxx.globalCompositeOperation = "lighter";
+        const nT = p.trail.length;
+        for (const off of [-13, -6.5, 0, 6.5, 13]){
+          fxx.strokeStyle = off === 0 ? "#fff6c9" : "#ffc830";
+          for (let i = 1; i < nT; i++){
+            const a = i / nT; fxx.globalAlpha = a * .7 * Math.min(1, p.life * 2); fxx.lineWidth = (1 + a * 3.2) * (off === 0 ? 1.3 : 1);
+            fxx.beginPath(); fxx.moveTo(p.trail[i - 1][0] + off * .5, p.trail[i - 1][1] + off); fxx.lineTo(p.trail[i][0] + off * .5, p.trail[i][1] + off); fxx.stroke();
+          }
+        }
+        fxx.globalCompositeOperation = "source-over"; fxx.globalAlpha = Math.min(1, p.life * 2);
+        fxx.save(); fxx.translate(p.x, p.y); fxx.rotate(p.rot); const sz = p.size * (.75 + .25 * e);
+        fxx.shadowColor = "rgba(255,190,40,.8)"; fxx.shadowBlur = 18; fxx.drawImage(fanSprite, -sz * .5, -sz * .77, sz, sz); fxx.restore();
       } else if (p.type === "conf"){
         p.rot += p.vr; fxx.save(); fxx.translate(p.x, p.y); fxx.rotate(p.rot); fxx.globalAlpha = Math.min(1, p.life);
         fxx.fillStyle = p.c; fxx.fillRect(-p.r, -p.r / 2.5, p.r * 2, p.r / 1.25 * Math.abs(Math.cos(p.rot * 2))); fxx.restore();
@@ -1166,6 +1336,21 @@ const FX = (() => {
   raf = requestAnimationFrame(loop);
   return {
     boost(){ boost = 1; },
+    fan(x0, y0, x1, y1, {size = 150, dur = 1.1, bend = .25, spin = 5, quiet = false} = {}){
+      const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, dx = x1 - x0, dy = y1 - y0;
+      parts.push({type: "fan", x0, y0, x1, y1, cx: mx - dy * bend, cy: my + dx * bend, x: x0, y: y0, vx: 0, vy: 0, g: 0, drag: 1, age: 0, dur, life: dur + .5, size, r0: rnd(-.6, .6), spin, trail: []});
+      if (!quiet && A.ok()) A.whoosh(dur * .8, 500, 3600, .1);
+    },
+    spinFans(){
+      if (reduced()) return;
+      this.fan(-60, H * .12, W + 40, H * .62, {size: 170, dur: 1.2, bend: -.3, spin: 4});
+      setTimeout(() => this.fan(W + 60, H * .1, -40, H * .78, {size: 150, dur: 1.3, bend: .3, spin: -4}), 280);
+    },
+    winFans(level){
+      if (reduced()) return;
+      const n = level === "mega" ? 4 : level === "big" ? 3 : 2;
+      for (let k = 0; k < n; k++) setTimeout(() => { const l = k % 2 === 0; this.fan(l ? -70 : W + 70, rnd(H * .05, H * .4), l ? W + 70 : -70, rnd(H * .45, H * .9), {size: rnd(150, 210), dur: rnd(1.1, 1.5), bend: l ? -.28 : .28, spin: l ? 4.5 : -4.5}); }, k * 320);
+    },
     coins(n, x = W / 2, y = H * .45, spread = 1){
       if (reduced()) n = Math.min(n, 12);
       for (let k = 0; k < n; k++) parts.push({type: "coin", x: x + rnd(-30, 30), y, vx: rnd(-7, 7) * spread, vy: rnd(-17, -6), g: .45, drag: .995, r: rnd(8, 15), rot: rnd(0, 6), vr: rnd(.1, .35), tilt: rnd(-.4, .4), life: rnd(2.5, 4), bounce: 2});
@@ -1179,7 +1364,7 @@ const FX = (() => {
       const cols = pick([["#ffd24a", "#fff3b0"], ["#ff3b30", "#ffb3aa"], ["#ff8a00", "#ffd24a"], ["#ff5fb0", "#fff"]]);
       const n = 70;
       for (let k = 0; k < n; k++){ const a = k / n * Math.PI * 2, s = rnd(2.5, 6.5); parts.push({type: k % 3 ? "dot" : "star", x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, g: .06, drag: .975, r: rnd(1.4, 2.6), c: pick(cols), life: rnd(1, 1.8)}); }
-      if (A.ok()){ A.noiseHit(0, .5, 600, .35, "lowpass"); A.tone(rnd(900, 1400), 0, .4, {vol: .03, to: 300}); }
+      if (A.ok()){ A.boom(); for (let q = 0; q < 4; q++) A.noiseHit(.12 + q * .07, .03, rnd(3500, 6500), .09, "highpass"); }
     },
     sparkle(el, n = 14){
       const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -1193,13 +1378,47 @@ const FX = (() => {
 /* ================================================================
    REELS (5 x 3)
    ================================================================ */
-const SYM = {
-  W: {e: "🐉", label: "WILD"}, S: {e: "🏮", label: "SCATTER"}, B: {e: "🧧", label: "BONUS"},
-  M: {e: "💰"}, J: {e: "🀄"}, P: {t: "♠"}, H: {t: "♥"}, D: {t: "♦"}, C: {t: "♣"}
+const f1 = n => +n.toFixed(1);
+/* the folding fan from the artwork: cream/gold ribs, orange blossoms, dark striped handle, gold tassel */
+function fanArt(){
+  const px = 50, py = 80, R = 52, a0 = -Math.PI * .81, a1 = -Math.PI * .19, n = 9;
+  const P = (a, r) => [f1(px + r * Math.cos(a)), f1(py + r * Math.sin(a))];
+  let lite = "", dark = "", ribs = "", stripes = "";
+  for (let i = 0; i < n; i++){
+    const t0 = a0 + (a1 - a0) * i / n, t1 = a0 + (a1 - a0) * (i + 1) / n, [x0, y0] = P(t0, R), [x1, y1] = P(t1, R);
+    const d = `M${px} ${py}L${x0} ${y0}A${R} ${R} 0 0 1 ${x1} ${y1}Z`;
+    if (i % 2) dark += d; else lite += d;
+  }
+  for (let i = 0; i <= n; i++){ const a = a0 + (a1 - a0) * i / n, [x, y] = P(a, R), [sx, sy] = P(a, 15); ribs += `M${px} ${py}L${x} ${y}`; stripes += `M${px} ${py}L${sx} ${sy}`; }
+  const [ex0, ey0] = P(a0, R), [ex1, ey1] = P(a1, R), [hx0, hy0] = P(a0, 15), [hx1, hy1] = P(a1, 15);
+  const flw = [[40, -.74], [40, -.5], [40, -.26], [27, -.62], [27, -.38], [16, -.5]].map(([r, a]) => { const [x, y] = P(a * Math.PI, r); return `<use href="#flw" transform="translate(${x} ${y})"/>`; }).join("");
+  return `<g class="fan"><path d="${lite}" fill="url(#gFanA)"/><path d="${dark}" fill="url(#gFanB)"/>${flw}<path d="${ribs}" stroke="#5a4012" stroke-width=".9" fill="none"/>
+    <path d="M${ex0} ${ey0}A${R} ${R} 0 0 1 ${ex1} ${ey1}" fill="none" stroke="#e8a428" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M${px} ${py}L${hx0} ${hy0}A15 15 0 0 1 ${hx1} ${hy1}Z" fill="#26340f"/><path d="${stripes}" stroke="#d8c030" stroke-width="1" fill="none"/>
+    <circle cx="${px}" cy="${py}" r="3" fill="url(#gGold)" stroke="#6a3200" stroke-width=".8"/>
+    <path d="M50 80C44 88 32 86 26 92" fill="none" stroke="url(#gGold)" stroke-width="2.4" stroke-linecap="round"/><path d="M23 90l6 1-1.5 9h-3z" fill="url(#gGold)" stroke="#8a4a00" stroke-width=".5"/></g>`;
+}
+const petalSet = (n, rx, ry, cy, off, fill) => Array.from({length: n}, (_, i) => `<ellipse cx="50" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${f1(off + i * 360 / n)} 50 50)" fill="${fill}" stroke="#c35a00" stroke-width=".7"/>`).join("");
+const SUITP = {
+  P: `<path d="M50 14C50 14 18 40 20 58C22 72 38 74 47 64C46 74 42 82 36 88H64C58 82 54 74 53 64C62 74 78 72 80 58C82 40 50 14 50 14Z" fill="url(#gSpade)"/>`,
+  H: `<path d="M50 84C14 58 18 26 36 24C44 23 50 31 50 31C50 31 56 23 64 24C82 26 86 58 50 84Z" fill="url(#gHeart)"/>`,
+  D: `<path d="M50 12L82 50L50 88L18 50Z" fill="url(#gDia)"/>`,
+  C: `<circle cx="50" cy="32" r="16" fill="url(#gClub)"/><circle cx="31" cy="58" r="16" fill="url(#gClub)"/><circle cx="69" cy="58" r="16" fill="url(#gClub)"/><path d="M50 50L42 88H58Z" fill="url(#gClub)"/>`
 };
+const FLC = {P: "#ffd24a", H: "#ffb0bd", D: "#ffd24a", C: "#86d8ff"};
+const ART = {};
+ART.W = `<svg class="art" viewBox="0 0 100 100"><path d="M-6 56C12 44 22 62 38 54S70 38 106 58V106H-6Z" fill="#53b52c" opacity=".55"/><ellipse cx="14" cy="84" rx="12" ry="5" fill="#2f8a1c" opacity=".8"/><g class="koi" fill="#ff7a1a"><ellipse cx="82" cy="86" rx="9" ry="4.2"/><path d="M90 86l8-5v10z"/><circle cx="76" cy="85" r="1" fill="#fff"/></g><g transform="translate(50 83) scale(1.13) translate(-50 -80)">${fanArt()}</g></svg>`;
+ART.S = `<svg class="art" viewBox="0 0 100 100"><g fill="none" stroke="#ff5a7a" stroke-width="1.6" opacity=".75"><circle cx="20" cy="24" r="6" stroke-dasharray="2 1.6"/><circle cx="20" cy="24" r="11" stroke-dasharray="2.4 2"/><circle cx="20" cy="24" r="16" stroke-dasharray="2.6 2.6"/><circle cx="84" cy="74" r="6" stroke-dasharray="2 1.6"/><circle cx="84" cy="74" r="11" stroke-dasharray="2.4 2"/><circle cx="84" cy="74" r="16" stroke-dasharray="2.6 2.6"/></g>
+  <g class="crane"><polygon points="16,66 36,57 42,66" fill="#d9d9ec"/><g class="wingL"><polygon points="52,52 28,24 62,46" fill="#ececf8" stroke="#a9a9c8" stroke-width=".8"/></g><polygon points="36,57 64,50 76,66 46,72" fill="#fff" stroke="#b4b4d0" stroke-width=".8"/><polygon points="62,50 77,34 80,38 70,56" fill="#f6f6ff" stroke="#b4b4d0" stroke-width=".8"/><polygon points="77,34 81,29 84,35" fill="#fff" stroke="#b4b4d0" stroke-width=".8"/><polygon points="84,35 94,40 83,38" fill="#ffb347"/><g class="wingR"><polygon points="58,50 88,28 72,62" fill="#fff" stroke="#b4b4d0" stroke-width=".8"/></g><circle cx="44" cy="62" r="4" fill="#e8283c"/><circle cx="73" cy="46" r="3.4" fill="#e8283c"/></g></svg>`;
+ART.B = `<svg class="art" viewBox="0 0 100 100"><g fill="none" stroke="#9fdcff" stroke-opacity=".55" stroke-width="1.2">${[[16, 92], [50, 92], [84, 92], [33, 102], [67, 102], [0, 102], [100, 102]].map(([x, y]) => [6, 10, 14].map(r => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")).join("")}</g><g class="koi" fill="#ff7a1a"><ellipse cx="14" cy="22" rx="9" ry="4"/><path d="M5 22l-8-5v10z"/><circle cx="19" cy="21" r="1" fill="#fff"/></g><g class="petals">${petalSet(8, 8, 21, 29, 0, "url(#gPetal)")}${petalSet(8, 6.5, 14, 36, 22.5, "url(#gPetal2)")}<circle cx="50" cy="50" r="6" fill="#ffe27a" stroke="#c35a00" stroke-width=".8"/></g></svg>`;
+ART.M = `<svg class="art" viewBox="0 0 100 100"><g class="cn"><circle cx="50" cy="50" r="36" fill="url(#gGold)" stroke="#7a3d00" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="#a85a00" stroke-width="1.6"/><circle cx="50" cy="50" r="33" fill="none" stroke="#fff6c0" stroke-width="1" stroke-dasharray="1.2 3.2" opacity=".9"/><rect x="39" y="39" width="22" height="22" rx="2" fill="#3a1400" stroke="#a85a00" stroke-width="1.6"/><path d="M50 18v14M50 68v14M18 50h14M68 50h14" stroke="#a85a00" stroke-width="1.6" opacity=".7"/></g></svg>`;
+ART.J = `<svg class="art" viewBox="0 0 100 100"><g class="lant"><path d="M50 2V14" stroke="#e8b030" stroke-width="2"/><rect x="38" y="12" width="24" height="7" rx="2" fill="url(#gGold)"/><ellipse cx="50" cy="44" rx="26" ry="25" fill="url(#gLant)" stroke="#ffd0ea" stroke-opacity=".6"/><path d="M26 34Q50 40 74 34M24 44H76M26 54Q50 48 74 54" fill="none" stroke="#a01060" stroke-width="1.4" opacity=".6"/><rect x="38" y="66" width="24" height="7" rx="2" fill="url(#gGold)"/><path d="M50 73v16" stroke="#ff5aa8" stroke-width="3" stroke-linecap="round"/><path d="M46 86h8l-1 8h-6z" fill="#ff7cb8"/></g></svg>`;
+for (const k of ["P", "H", "D", "C"]) ART[k] = `<svg class="art" viewBox="0 0 100 100"><use class="flower" href="#flowerFrame" width="100" height="100" style="color:${FLC[k]}"/><g transform="translate(24 24) scale(.52)" stroke="rgba(0,0,0,.35)" stroke-width="1.4">${SUITP[k]}</g></svg>`;
+const LBL = {W: "WILD", S: "SCATTER", B: "BONUS"};
 const FILL = ["S", "B", "M", "J", "P", "H", "D", "C"];
 const ALL = ["W", ...FILL];
-const tileHTML = s => { const d = SYM[s]; return `<div class="tile" data-s="${s}"><div class="in s-${s}">${d.e ? `<span class="em">${d.e}</span>` : `<span class="suit">${d.t}</span>`}${d.label ? `<span class="lbl">${d.label}</span>` : ""}</div></div>`; };
+const inHTML = s => `<div class="in s-${s}">${ART[s]}${LBL[s] ? `<span class="lbl">${LBL[s]}</span>` : ""}</div>`;
+const tileHTML = s => `<div class="tile" data-s="${s}">${inHTML(s)}</div>`;
 const reelsEl = $("#reels");
 const reels = [...document.querySelectorAll(".reel")].map(el => ({el, strip: el.querySelector(".strip"), cells: [], pos: 0, speed: 0, mode: "idle", anim: null, last: 0}));
 function T(){ return reels[0].el.clientWidth || 58; }
@@ -1231,7 +1450,7 @@ function tick(t){
       if (x >= 1){ R.pos = a.to; R.mode = "idle"; R.anim = null; a.done(); }
     }
     const cell = Math.floor(R.pos);
-    if (cell !== R.lastCell){ R.lastCell = cell; if (R.mode !== "idle" && t - R.last > 55 && k === 0){ R.last = t; if (A.ctx && cfg.sound) A.noiseHit(0, .02, 4200, .06); } }
+    if (cell !== R.lastCell){ R.lastCell = cell; if (R.mode !== "idle" && t - (A.lastTick || 0) > 40){ A.lastTick = t; if (A.ctx && cfg.sound) A.noiseHit(0, .02, 3600 + k * 450, .055); } }
     render(R);
   });
   if (active) requestAnimationFrame(tick); else { rafOn = false; lastT = 0; }
@@ -1263,7 +1482,7 @@ function stopReels(grid, level){
     if (k >= anticFrom) delay += 1100; else delay += k ? 330 : 0;
     const myDelay = delay;
     return new Promise(done => {
-      if (k === anticFrom) setTimeout(() => { reels.slice(anticFrom).forEach(r => r.el.classList.add("antic")); A.antic((n - anticFrom) * 1.1 + .3); FX.boost(); }, myDelay - 1100);
+      if (k === anticFrom) setTimeout(() => { reels.slice(anticFrom).forEach(r => r.el.classList.add("antic")); A.antic((n - anticFrom) * 1.1 + .3); A.drumroll((n - anticFrom) * 1.1 + .1); FX.boost(); }, myDelay - 1100);
       setTimeout(() => {
         const t = T(), cur = Math.round(((R.pos % (R.cells.length / 2)) + R.cells.length / 2) % (R.cells.length / 2));
         const vis = R.cells.slice(cur, cur + 3);
@@ -1272,6 +1491,7 @@ function stopReels(grid, level){
         R.mode = "stop"; R.pos = 1 + 3 + K; render(R);
         R.anim = {from: R.pos, to: 1, t0: performance.now(), dur: 820, done: () => {
           R.el.classList.remove("antic"); A.stop(k); buzz(14); A.spinFade((n - k - 1) / n);
+          const col = grid.g[k]; if (col.includes("W")) A.shimmer(k); else if (col.includes("S")) A.crane(); else if (col.includes("B")) A.lotus();
           if (k === n - 1) A.spinStop();
           done();
         }};
@@ -1294,6 +1514,21 @@ function showWin(hits){
   const len = pts.reduce((s, p, k) => k ? s + Math.hypot(p[0] - pts[k-1][0], p[1] - pts[k-1][1]) : 0, 0);
   $("#lines").innerHTML = `<path class="glow" d="${d}"/><path class="core" d="${d}" style="--len:${len.toFixed(0)}"/>`;
   $("#machine").classList.add("won");
+  for (let k = 0; k < hits; k++) wildExpand(k);
+}
+/* the winning wilds expand to fill their reels, like the stacked fans in the artwork */
+function wildExpand(k){
+  const R = reels[k];
+  [1, 3].forEach((idx, j) => setTimeout(() => {
+    const tile = R.strip.children[idx]; if (!tile || !tile.isConnected || tile.dataset.s === "W") return;
+    tile.classList.add("flipw");
+    setTimeout(() => {
+      if (!tile.isConnected) return;
+      tile.innerHTML = inHTML("W"); tile.dataset.s = "W"; tile.classList.add("hit"); R.cells[idx] = "W"; FX.sparkle(tile, 12);
+      if (A.ctx && cfg.sound){ A.bell(1046 + k * 120, 0, .5, .05); A.whoosh(.25, 1200, 5000, .04); }
+    }, 250);
+    setTimeout(() => tile.classList.remove("flipw"), 520);
+  }, 500 + k * 170 + j * 90));
 }
 
 /* bulbs around the frame */
@@ -1331,7 +1566,7 @@ async function spin(demo){
   if (!demo && !cfg.avKey){ A.click(); openSheet("settings"); setTimeout(() => $("#avKey").focus(), 400); return; }
   busy = true; ["#spinBtn", "#demoBtn"].forEach(s => $(s).disabled = true);
   $("#machine").classList.add("spinning"); $("#rays").classList.add("fast");
-  A.lever(); buzz(25); A.spinStart(); FX.boost();
+  A.insert(); setTimeout(() => A.lever(), 140); buzz(25); A.spinStart(); FX.boost(); FX.spinFans();
   startReels();
   const t0 = Date.now();
   let res, err;
@@ -1361,8 +1596,11 @@ function render_all(){ if (!last) return; renderResult(last); renderRunners(last
 async function celebrate(level, res){
   if (level === "lose"){ A.lose(); toast("NO WIN", true); return; }
   A.fanfare(level); buzz(level === "mega" ? [40, 40, 40, 40, 80, 40, 120] : [30, 40, 60]);
-  FX.flash(); FX.shake(level === "mega");
+  FX.flash(); FX.shake(level === "mega"); FX.winFans(level);
+  A.coinCascade(level === "mega" ? 30 : level === "big" ? 18 : 8, level === "win" ? 1.2 : 2.4);
+  if (level !== "win"){ A.taiko(0); if (level === "mega"){ A.taiko(.38); A.taiko(.76); } A.applause(level === "mega" ? 5 : 3.2); }
   if (level === "win"){ toast("WIN!"); FX.coins(30); return; }
+  await sleep(1600); // let the glowing wilds and the payline play out first
   // full-screen win overlay
   const ov = $("#winov"), plan = makePlan(res.pick, res.daily);
   $("#wTitle").textContent = level === "mega" ? "MEGA WIN" : "BIG WIN";
@@ -1373,13 +1611,13 @@ async function celebrate(level, res){
   const fw = level === "mega" ? setInterval(() => FX.firework(rnd(innerWidth * .15, innerWidth * .85), rnd(innerHeight * .12, innerHeight * .45)), 420) : null;
   const rain = level === "mega" ? setInterval(() => FX.rain(8), 500) : null;
   const target = Math.max(0, plan.payout), dur = 2600, t0 = performance.now();
-  let lastCoin = 0;
+  let lastCoin = 0, tickN = 0;
   await new Promise(resolve => {
     let finished = false;
     const count = t => {
       const x = clamp((t - t0) / dur, 0, 1), e = 1 - Math.pow(1 - x, 3);
       $("#wAmt").textContent = cash(target * e);
-      if (t - lastCoin > 70 && x < 1){ lastCoin = t; A.coin(); }
+      if (t - lastCoin > 60 && x < 1){ lastCoin = t; A.rollTick(tickN++); if (tickN % 3 === 0) A.coin(); }
       if (x < 1 && !finished) requestAnimationFrame(count);
     };
     requestAnimationFrame(count);
@@ -1683,7 +1921,7 @@ const sheet = $("#sheet"), veil = $("#veil");
 let sheetMode = "settings";
 $("#risk").innerHTML = RISKS.map(r => `<option value="${r}">${r}% of bankroll</option>`).join("");
 function openSheet(mode){
-  sheetMode = mode;
+  sheetMode = mode; A.whoosh(.3, 500, 2200, .05);
   $("#setBody").hidden = mode !== "settings"; $("#infoBody").hidden = mode !== "info";
   $("#sheetTitle").textContent = mode === "info" ? "How Vegas thinks" : "Settings";
   if (mode === "settings"){
@@ -1705,7 +1943,7 @@ function closeSheet(){
     syncAudioBtns(); if (cfg.music && cfg.sound) A.musicOn(); else A.musicOff();
     updateMeters(); if (last) render_all(); else renderWelcome();
   }
-  sheet.classList.remove("open"); veil.classList.remove("open");
+  sheet.classList.remove("open"); veil.classList.remove("open"); A.whoosh(.25, 2200, 500, .04);
   setTimeout(() => { sheet.hidden = veil.hidden = true; }, 420);
 }
 $("#setBtn").onclick = () => { A.init(); A.click(); openSheet("settings"); };
@@ -1743,6 +1981,25 @@ function renderWelcome(){
 
 /* idle attract mode: random sparkles on the reels */
 setInterval(() => { if (busy || document.hidden || reduced()) return; const R = pick(reels), t = R.strip.children[1 + Math.floor(Math.random() * 3)]; if (t) FX.sparkle(t, 6); }, 2200);
+
+/* ===== dressing: floating 3D coins, rotating medallions, fans, headline ===== */
+(function dress(){
+  const coin = (pos, s, f, d, r, blur) => `<div class="cwrap" style="${pos};--s:${s}px;--f:${f}s;filter:blur(${blur}px)"><div class="coin3d" style="--d:${d}s;--r:${r}deg"></div></div>`;
+  const med = pos => `<div class="medbg" style="${pos}"><svg viewBox="0 0 100 100"><use href="#flowerFrame" width="100" height="100" style="color:#ffd24a"/></svg></div>`;
+  $("#back").innerHTML = med("left:-170px;top:14%") + med("right:-170px;top:58%;animation-direction:reverse") +
+    [["left:-34px;top:8%", 92, 6.5, 3.6, -12, 1.5], ["left:-20px;top:46%", 64, 5.2, 2.8, 18, 0], ["left:-44px;top:74%", 118, 7.4, 4.4, 8, 2.5],
+     ["right:-38px;top:12%", 104, 6.8, 3.9, 14, 1], ["right:-26px;top:44%", 70, 5.6, 3.1, -20, 0], ["right:-50px;top:72%", 126, 7.8, 4.8, -6, 3]].map(a => coin(...a)).join("");
+  $("#fcoins").innerHTML = [["left:-52px;top:36%", 60, 4.8, 2.6, -14, 0], ["right:-54px;top:18%", 66, 5.6, 3, 16, 0], ["left:-50px;top:88%", 54, 5.2, 2.4, 12, 0], ["right:-50px;top:60%", 58, 4.6, 2.9, -18, 0]].map(a => coin(...a)).join("");
+  const words = ["LUCKY LEADERS", "GOLDEN BREAKOUTS", "WILD WINS", "90-DAY JACKPOT", "FORTUNE SWING"]; let wi = 0;
+  const setRib = () => { $("#rib").innerHTML = `<span class="rt gold sm">${words[wi++ % words.length]}</span>`; };
+  setRib(); setInterval(() => { if (!document.hidden) setRib(); }, 3200);
+  document.querySelectorAll(".coinbtn").forEach(b => b.addEventListener("click", () => { b.classList.remove("flip"); void b.offsetWidth; b.classList.add("flip"); }));
+  setInterval(() => {
+    if (busy || document.hidden || reduced() || !sheet.hidden) return;
+    const w = innerWidth, h = innerHeight, l = Math.random() < .5;
+    FX.fan(l ? -60 : w + 60, rnd(h * .1, h * .4), l ? w + 60 : -60, rnd(h * .5, h * .9), {size: rnd(90, 130), dur: 1.7, bend: l ? -.25 : .25, spin: l ? 3 : -3, quiet: true});
+  }, 9000);
+})();
 
 syncAudioBtns(); updateMeters(); renderTape(null); renderWelcome(); renderRecord();
 </script>
