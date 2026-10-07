@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="only dark">
+<title>Vegas</title>
+<meta name="description" content="A swing-trade scanner that plays like a slot machine.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vegas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --card:rgba(28,28,30,.78); --card2:#2C2C2E; --label:#fff; --label2:rgba(235,235,245,.6); --label3:rgba(235,235,245,.3);
+  --sep:rgba(84,84,88,.55); --fill:rgba(118,118,128,.24); --green:#30D158; --red:#FF453A; --yellow:#FFD60A;
+  --gold:linear-gradient(180deg,#FFF6D8 0%,#F5CD63 42%,#C08A22 78%,#8A5D10 100%);
+  --goldflat:#F2C14E; --goldtext:linear-gradient(180deg,#FFF3C9 10%,#F2C14E 55%,#B07A18 100%);
+  --cell:88px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{background:var(--bg);color-scheme:only dark}
+html,body{margin:0;color:var(--label)}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:22px;letter-spacing:-.41px;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  min-height:100vh;min-height:100dvh;background:var(--bg);overflow-x:hidden;
+}
+button{font:inherit;color:inherit;letter-spacing:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--goldflat);outline-offset:2px;border-radius:10px}
+a{color:var(--goldflat)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- background: warm casino glow on black ---------- */
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(70% 45% at 50% 0%,rgba(242,193,78,.18),transparent 70%),
+    radial-gradient(60% 40% at 0% 100%,rgba(255,69,58,.10),transparent 70%),
+    radial-gradient(60% 40% at 100% 80%,rgba(191,90,242,.08),transparent 70%),#000}
+
+.wrap{max-width:480px;margin:0 auto;padding:0 16px calc(40px + env(safe-area-inset-bottom))}
+
+/* ---------- header ---------- */
+header{position:sticky;top:0;z-index:5;padding:calc(10px + env(safe-area-inset-top)) 0 10px;transition:background-color .25s,box-shadow .25s}
+header.scrolled{background:rgba(0,0,0,.6);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 .5px 0 var(--sep)}
+.hin{max-width:480px;margin:0 auto;padding:0 16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{margin:0;font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;font-size:34px;line-height:41px;font-weight:800;letter-spacing:-.6px;
+  background:var(--goldtext);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:1px;font-size:15px;line-height:20px;letter-spacing:-.24px;color:var(--label2)}
+.hbtns{display:flex;gap:8px;margin-bottom:4px}
+.iconbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);display:grid;place-items:center;transition:transform .15s}
+.iconbtn:active{transform:scale(.9)}
+.iconbtn svg{width:19px;height:19px}
+
+/* ---------- the machine ---------- */
+.machine{position:relative;margin-top:14px;border-radius:34px;padding:16px 14px 18px;
+  background:linear-gradient(180deg,#3A3A3C 0%,#1C1C1E 38%,#141416 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.6),0 30px 60px -20px rgba(242,193,78,.25),0 2px 6px rgba(0,0,0,.6)}
+.machine::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,240,200,.75),rgba(192,138,34,.35) 30%,rgba(255,255,255,.06) 60%,rgba(242,193,78,.55));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.marquee{display:flex;justify-content:space-between;padding:0 10px;height:10px}
+.marquee i{width:7px;height:7px;border-radius:50%;background:#5a4a20;box-shadow:none;transition:background .2s}
+.marquee.bottom{margin-top:12px}
+.machine .bulbs i{animation:bulb 1.6s infinite}
+.machine.spinning .bulbs i{animation-duration:.45s}
+@keyframes bulb{0%,100%{background:#FFE9A8;box-shadow:0 0 8px 2px rgba(255,214,10,.7)}50%{background:#5a4a20;box-shadow:none}}
+.title-plate{text-align:center;margin:8px 0 12px;font:800 12px/16px "SF Pro Rounded",-apple-system,"Inter",system-ui,sans-serif;letter-spacing:3px;color:rgba(255,236,190,.75);text-transform:uppercase}
+.bay{display:flex;gap:10px;align-items:stretch}
+.window{position:relative;flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px;border-radius:22px;
+  background:linear-gradient(180deg,#0b0b0c,#1a1a1c);box-shadow:inset 0 2px 8px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.05)}
+.reel{position:relative;height:calc(var(--cell) * 1.55);overflow:hidden;border-radius:15px;
+  background:linear-gradient(180deg,#d9d9de 0%,#fbfbfd 22%,#ffffff 50%,#fbfbfd 78%,#d9d9de 100%)}
+.reel::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 74%,rgba(0,0,0,.55) 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.strip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.strip.blur{filter:blur(1.6px)}
+.cell{height:var(--cell);display:grid;place-items:center;font-size:44px;line-height:1;user-select:none}
+.sym-7{font:900 56px/1 "SF Pro Rounded",-apple-system,"Inter",system-ui,sans-serif;background:linear-gradient(180deg,#FF6B5E,#E0201A 60%,#9E0F0A);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+.sym-bar{font:900 17px/1 "SF Pro Rounded",-apple-system,"Inter",system-ui,sans-serif;letter-spacing:1px;color:#fff;background:#1C1C1E;padding:7px 9px;border-radius:8px;box-shadow:inset 0 0 0 2px #F2C14E}
+.payline{position:absolute;left:2px;right:2px;top:50%;height:2px;margin-top:-1px;background:linear-gradient(90deg,transparent,rgba(242,193,78,.85) 8%,rgba(242,193,78,.85) 92%,transparent);pointer-events:none;opacity:.55}
+.window::before,.window::after{content:"";position:absolute;top:50%;margin-top:-7px;border:7px solid transparent;z-index:2}
+.window::before{left:-2px;border-left-color:var(--goldflat)}
+.window::after{right:-2px;border-right-color:var(--goldflat)}
+.window.win .reel{animation:flash .5s 3}
+@keyframes flash{50%{box-shadow:0 0 0 3px var(--goldflat),0 0 24px rgba(242,193,78,.8)}}
+
+/* lever */
+.lever{position:relative;width:34px;flex:none;touch-action:none;cursor:grab}
+.lever .slot{position:absolute;left:50%;top:22px;bottom:6px;width:10px;margin-left:-5px;border-radius:5px;background:#0b0b0c;box-shadow:inset 0 1px 3px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
+.lever .rod{position:absolute;left:50%;top:26px;width:6px;margin-left:-3px;border-radius:3px;background:linear-gradient(90deg,#8E8E93,#F2F2F7 45%,#8E8E93);height:0}
+.lever .knob{position:absolute;left:50%;top:0;width:32px;height:32px;margin-left:-16px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#FFB4AD 0%,#FF453A 30%,#B3140D 75%,#6E0805 100%);box-shadow:0 4px 10px rgba(0,0,0,.6),inset 0 -2px 4px rgba(0,0,0,.35)}
+.lever.springing .knob,.lever.springing .rod{transition:transform .5s cubic-bezier(.34,1.56,.64,1),height .5s cubic-bezier(.34,1.56,.64,1)}
+
+.status{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px auto 0;min-height:32px;padding:6px 14px;border-radius:16px;width:max-content;max-width:100%;
+  background:rgba(0,0,0,.45);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.1);font-size:13px;line-height:18px;letter-spacing:-.08px;color:var(--label2)}
+.status b{color:#fff;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--label3)}
+.spinning .dot{background:var(--goldflat);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+
+.cta{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;height:54px;border:0;border-radius:16px;font-weight:700;font-size:17px;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.gold{background:var(--gold);color:#2B1B00;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 24px -8px rgba(242,193,78,.6)}
+.btn.ghost{background:var(--fill);color:#fff;flex:0 0 auto;padding:0 20px}
+
+/* ---------- cards ---------- */
+.section-h{margin:28px 4px 8px;font-size:13px;line-height:18px;letter-spacing:-.08px;color:var(--label2);text-transform:uppercase}
+.card{background:var(--card);border-radius:22px;padding:18px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.card + .card{margin-top:12px}
+.reveal{animation:rise .55s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
+
+.pickhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ticker{font-family:"SF Pro Display",-apple-system,"Inter",system-ui,sans-serif;font-size:44px;line-height:48px;font-weight:800;letter-spacing:-1px;background:var(--goldtext);-webkit-background-clip:text;background-clip:text;color:transparent}
+.price{margin-top:2px;font-size:15px;color:var(--label2)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;font-size:13px;font-weight:600;line-height:18px}
+.chip.up{background:rgba(48,209,88,.16);color:var(--green)}
+.chip.down{background:rgba(255,69,58,.16);color:var(--red)}
+.chip.neutral{background:var(--fill);color:var(--label2)}
+.chip.demo{background:rgba(191,90,242,.2);color:#DA8FFF}
+.ring{position:relative;width:76px;height:76px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .v b{display:block;font-size:24px;line-height:24px;font-weight:800}
+.ring .v span{display:block;font-size:10px;line-height:12px;color:var(--label2);text-transform:uppercase;letter-spacing:.5px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.tile{background:rgba(255,255,255,.05);border-radius:14px;padding:10px 12px}
+.tile .k{font-size:12px;line-height:16px;color:var(--label2);text-transform:uppercase;letter-spacing:.3px}
+.tile .val{margin-top:2px;font-size:20px;line-height:25px;font-weight:700;white-space:nowrap}
+.tile .val.sm{font-size:17px}
+#out{scroll-margin-top:90px}
+.tile .s{font-size:13px;line-height:17px;color:var(--label2)}
+.tile.g .val{color:var(--green)} .tile.r .val{color:var(--red)} .tile.y .val{color:var(--goldflat)}
+
+.chart{margin-top:14px;border-radius:14px;background:rgba(255,255,255,.03);overflow:hidden}
+.chart svg{display:block;width:100%;height:auto}
+
+.verdict{margin-top:14px;padding:12px 14px;border-radius:14px;font-weight:700;text-align:center;font-size:15px;letter-spacing:.2px}
+.verdict.jackpot{background:var(--gold);color:#2B1B00}
+.verdict.win{background:rgba(48,209,88,.16);color:var(--green)}
+.verdict.push{background:rgba(255,214,10,.14);color:var(--yellow)}
+.verdict.lose{background:rgba(255,69,58,.14);color:var(--red)}
+
+.prose{margin:0;font-size:15px;line-height:21px;letter-spacing:-.24px;color:rgba(255,255,255,.88)}
+.prose + .prose{margin-top:8px}
+.h3{margin:0 0 8px;font-size:15px;font-weight:700;letter-spacing:-.24px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.muted{color:var(--label2);font-size:13px;line-height:18px}
+
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 0;border-bottom:.5px solid var(--sep);font-size:15px;line-height:20px}
+.list li:last-child{border-bottom:0}
+.list .l{flex:1;min-width:0}
+.list .r{color:var(--label2);text-align:right;flex:none}
+.mark{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:800}
+.mark.ok{background:rgba(48,209,88,.18);color:var(--green)}
+.mark.no{background:rgba(255,69,58,.18);color:var(--red)}
+.mark.na{background:var(--fill);color:var(--label2)}
+.list a{color:#fff;text-decoration:none}
+.list .meta{display:block;font-size:12px;line-height:16px;color:var(--label2);margin-top:2px}
+.rowbtn{width:100%;border:0;background:none;text-align:left;padding:0;display:flex;align-items:center;gap:12px}
+.score{min-width:44px;padding:3px 0;border-radius:8px;text-align:center;font-weight:700;font-size:14px;background:var(--fill)}
+.score.hi{background:rgba(242,193,78,.2);color:var(--goldflat)}
+.chev{color:var(--label3);font-size:18px}
+.linkbtn{border:0;background:none;color:var(--goldflat);font-weight:600;padding:8px 0}
+.err{color:var(--red)}
+
+.welcome .big{font-size:22px;line-height:28px;font-weight:700;margin:0 0 6px}
+footer{margin-top:28px;text-align:center;font-size:12px;line-height:17px;color:var(--label3)}
+
+/* ---------- settings sheet ---------- */
+.veil{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
+.veil.open{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-width:520px;margin:0 auto;max-height:92dvh;overflow:auto;
+  background:#1C1C1E;border-radius:14px 14px 0 0;padding:8px 16px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .45s cubic-bezier(.2,.9,.25,1)}
+.sheet.open{transform:none}
+.grabber{width:36px;height:5px;border-radius:3px;background:rgba(235,235,245,.3);margin:0 auto 10px}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sheet-h h2{margin:0;font-size:17px;font-weight:600}
+.done{border:0;background:none;color:var(--goldflat);font-weight:600;font-size:17px;padding:8px 0}
+.group{background:#2C2C2E;border-radius:12px;overflow:hidden}
+.ghead{margin:22px 16px 6px;font-size:13px;color:var(--label2);text-transform:uppercase}
+.gfoot{margin:6px 16px 0;font-size:13px;line-height:18px;color:var(--label2)}
+.field{display:flex;align-items:center;gap:12px;padding:0 16px;min-height:44px;border-bottom:.5px solid var(--sep)}
+.field:last-child{border-bottom:0}
+.field label{flex:none;width:122px;font-size:17px;white-space:nowrap}
+.field .grow{padding:10px 0}
+.field input,.field textarea{flex:1;min-width:0;border:0;background:none;color:#fff;font:inherit;letter-spacing:inherit;padding:11px 0;outline:none}
+.field textarea{resize:vertical;min-height:70px;line-height:22px}
+.field input::placeholder,.field textarea::placeholder{color:var(--label3)}
+.switch{position:relative;flex:none;width:51px;height:31px;border-radius:16px;border:0;background:rgba(120,120,128,.32);transition:background .25s;padding:0}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.15);transition:transform .3s cubic-bezier(.3,1.4,.6,1)}
+.switch[aria-checked="true"]{background:var(--green)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+.field .grow{flex:1}
+
+canvas#fx{position:fixed;inset:0;z-index:30;pointer-events:none;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none}.machine .bulbs i{animation:none;background:#FFE9A8}}
+@media (max-width:370px){:root{--cell:74px}.cell{font-size:36px}.sym-7{font-size:46px}.ticker{font-size:36px;line-height:40px}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<header id="hdr">
+  <div class="hin">
+    <div>
+      <h1>Vegas</h1>
+      <div class="sub" id="sub">Swing picks · 2–4 week holds</div>
+    </div>
+    <div class="hbtns">
+      <button class="iconbtn" id="soundBtn" aria-label="Toggle sound"></button>
+      <button class="iconbtn" id="setBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="machine" id="machine">
+    <div class="marquee bulbs" id="bulbsTop"></div>
+    <div class="title-plate">★ Swing Slots ★</div>
+    <div class="bay">
+      <div class="window" id="window">
+        <div class="reel"><div class="strip"></div></div>
+        <div class="reel"><div class="strip"></div></div>
+        <div class="reel"><div class="strip"></div></div>
+        <div class="payline"></div>
+      </div>
+      <div class="lever" id="lever" role="button" tabindex="0" aria-label="Pull the lever to scan">
+        <div class="slot"></div><div class="rod"></div><div class="knob"></div>
+      </div>
+    </div>
+    <div class="marquee bulbs bottom" id="bulbsBot"></div>
+    <div class="status" id="status" aria-live="polite"><span class="dot"></span><span id="statusText">Pull to scan the market</span></div>
+  </section>
+
+  <div class="cta">
+    <button class="btn gold" id="spinBtn">Pull</button>
+    <button class="btn ghost" id="demoBtn">Demo</button>
+  </div>
+
+  <div id="out"></div>
+  <div id="runners"></div>
+  <div id="history"></div>
+
+  <footer>Not financial advice. Picks come from technical rules plus an AI read of recent headlines and can be wrong.<br>Decide your position size before you buy, and always set the stop.</footer>
+</main>
+
+<div class="veil" id="veil" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grabber"></div>
+  <div class="sheet-h"><span style="width:44px"></span><h2 id="sheetTitle">Settings</h2><button class="done" id="doneBtn">Done</button></div>
+
+  <div class="ghead">Market data</div>
+  <div class="group">
+    <div class="field"><label for="avKey">Alpha Vantage</label><input id="avKey" type="password" autocomplete="off" spellcheck="false" placeholder="API key"></div>
+  </div>
+  <div class="gfoot">Prices, market movers and news. <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">Get a free key</a>. The free plan allows 25 calls a day, so a spin uses about 6–10 and data is cached for the rest of the day.</div>
+
+  <div class="ghead">AI analyst</div>
+  <div class="group">
+    <div class="field"><label for="orKey">OpenRouter</label><input id="orKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-…"></div>
+    <div class="field"><label for="model">Model</label><input id="model" type="text" autocomplete="off" spellcheck="false" placeholder="deepseek/deepseek-chat"></div>
+  </div>
+  <div class="gfoot">DeepSeek reads the fetched headlines and the technicals, then scores the bullish bias. It doesn't browse the web on its own. Leave the key empty to use technicals only.</div>
+
+  <div class="ghead">Scan</div>
+  <div class="group">
+    <div class="field"><label for="watch">Watchlist</label><textarea id="watch" spellcheck="false" autocapitalize="characters"></textarea></div>
+    <div class="field"><label for="maxScan">Max lookups</label><input id="maxScan" type="number" min="2" max="20" inputmode="numeric"></div>
+    <div class="field"><span class="grow">Include today's top gainers &amp; most active</span><button class="switch" id="movers" role="switch" aria-checked="true" aria-label="Include market movers"></button></div>
+  </div>
+  <div class="gfoot">"Max lookups" caps how many uncached tickers one spin fetches. Tickers already fetched today are free.</div>
+
+  <div class="ghead">Data</div>
+  <div class="group">
+    <div class="field"><button class="linkbtn" id="clearCache">Clear today's cached prices</button></div>
+    <div class="field"><button class="linkbtn err" id="clearHist" style="color:var(--red)">Clear spin history</button></div>
+  </div>
+  <div class="gfoot">Keys are stored only in this browser (localStorage) and sent only to Alpha Vantage and OpenRouter.</div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<script>
+"use strict";
+/* ================= storage ================= */
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem("vegas." + k); return v === null ? d : JSON.parse(v); }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem("vegas." + k, JSON.stringify(v)); }catch{} },
+  del(k){ try{ localStorage.removeItem("vegas." + k); }catch{} },
+  keys(){ try{ return Object.keys(localStorage).filter(k => k.startsWith("vegas.")).map(k => k.slice(6)); }catch{ return []; } }
+};
+const DEFAULT_WATCH = "EXPD, AMD, NVDA, AVGO, PLTR, META, AMZN, GOOGL, MSFT, AAPL, LLY, JPM";
+const cfg = {
+  get avKey(){ return LS.get("avKey", ""); },
+  get orKey(){ return LS.get("orKey", ""); },
+  get model(){ return LS.get("model", "") || "deepseek/deepseek-chat"; },
+  get watch(){ return parseTickers(LS.get("watch", DEFAULT_WATCH)); },
+  get maxScan(){ return clamp(parseInt(LS.get("maxScan", 8), 10) || 8, 2, 20); },
+  get movers(){ return LS.get("movers", true); },
+  get sound(){ return LS.get("sound", true); }
+};
+function parseTickers(s){ return [...new Set(String(s).toUpperCase().split(/[^A-Z.]+/).filter(t => /^[A-Z]{1,5}(\.[A-Z])?$/.test(t)))]; }
+const today = () => new Date().toISOString().slice(0, 10);
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = v => "$" + (v >= 1000 ? v.toLocaleString(undefined, {maximumFractionDigits: 0}) : v.toFixed(2));
+const pct = v => (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+
+/* ================= indicators ================= */
+function smaAt(a, n, i){ if (i < n - 1) return NaN; let s = 0; for (let k = i - n + 1; k <= i; k++) s += a[k]; return s / n; }
+function ema(a, n){ const k = 2 / (n + 1); const o = []; let e = a[0]; for (let i = 0; i < a.length; i++){ e = i ? a[i] * k + e * (1 - k) : a[i]; o.push(e); } return o; }
+function rsi(c, n = 14){
+  const o = new Array(c.length).fill(NaN); if (c.length <= n) return o;
+  let g = 0, l = 0;
+  for (let i = 1; i <= n; i++){ const d = c[i] - c[i-1]; if (d > 0) g += d; else l -= d; }
+  g /= n; l /= n; o[n] = l === 0 ? 100 : 100 - 100 / (1 + g / l);
+  for (let i = n + 1; i < c.length; i++){
+    const d = c[i] - c[i-1];
+    g = (g * (n - 1) + Math.max(d, 0)) / n; l = (l * (n - 1) + Math.max(-d, 0)) / n;
+    o[i] = l === 0 ? 100 : 100 - 100 / (1 + g / l);
+  }
+  return o;
+}
+function atr(b, n = 14){
+  let a = NaN;
+  for (let i = 1; i < b.length; i++){
+    const tr = Math.max(b[i].h - b[i].l, Math.abs(b[i].h - b[i-1].c), Math.abs(b[i].l - b[i-1].c));
+    if (i < n) a = isNaN(a) ? tr : a + tr; else if (i === n) a = (a + tr) / n; else a = (a * (n - 1) + tr) / n;
+  }
+  return a;
+}
+
+/* ================= analysis ================= */
+function analyze(sym, bars){
+  const c = bars.map(b => b.c), v = bars.map(b => b.v), i = c.length - 1;
+  const close = c[i], prev = c[i-1];
+  const sma20 = smaAt(c, 20, i), sma50 = smaAt(c, 50, i);
+  let crossed = false;
+  for (let j = i - 2; j <= i; j++){ if (c[j] > smaAt(c, 20, j) && c[j-1] <= smaAt(c, 20, j-1)) crossed = true; }
+  let volRatio = 0;
+  for (let j = i - 2; j <= i; j++){ const avg = smaAt(v, 20, j - 1); if (avg > 0) volRatio = Math.max(volRatio, v[j] / avg); }
+  const r = rsi(c), rs = r[i];
+  const m = ema(c, 12).map((x, k) => x - ema(c, 26)[k]);
+  const sig = ema(m, 9), hist = m.map((x, k) => x - sig[k]);
+  let macdCross = false;
+  for (let j = i - 4; j <= i; j++) if (hist[j] > 0 && hist[j-1] <= 0) macdCross = true;
+  let up = 0, nu = 0, dn = 0, nd = 0;
+  for (let j = i - 9; j <= i; j++){ if (c[j] > c[j-1]){ up += v[j]; nu++; } else if (c[j] < c[j-1]){ dn += v[j]; nd++; } }
+  const udRatio = nd === 0 ? 2 : (nu === 0 ? 0 : (up / nu) / (dn / nd));
+  const a = atr(bars);
+  const support = Math.min(...bars.slice(-10).map(b => b.l));
+  const resistance = Math.max(...bars.slice(-60).map(b => b.h));
+
+  // score (max 100)
+  let score = 0;
+  const above = close > sma20, rsiOk = rs >= 30 && rs <= 70;
+  if (above) score += 20;
+  if (crossed) score += 15;
+  score += volRatio >= 2 ? 20 : volRatio >= 1.5 ? 12 : volRatio >= 1.2 ? 6 : 0;
+  score += rs >= 45 && rs <= 65 ? 15 : rsiOk ? 8 : 0;
+  score += hist[i] > 0 && hist[i] > hist[i-1] ? 15 : m[i] > sig[i] ? 10 : hist[i] > hist[i-1] ? 5 : 0;
+  if (udRatio > 1.2) score += 10;
+  if (close > sma50) score += 5;
+  const fails = [];
+  if (!above) fails.push("below 20-day MA");
+  if (rs > 70) fails.push("RSI overbought");
+  if (rs < 30) fails.push("RSI oversold");
+
+  // trade plan
+  let stop = Math.min(support - 0.25 * a, close - a);
+  stop = clamp(stop, close * 0.92, close * 0.97);
+  const risk = close - stop;
+  const t1 = clamp(close + 2 * risk, close * 1.05, close * 1.15);
+  const t2 = clamp(close + 3 * risk, t1 * 1.02, close * 1.15);
+  const plan = {
+    entryLo: Math.max(stop + risk * 0.5, close - 0.5 * a), entryHi: close + 0.25 * a, entry: close,
+    stop, t1, t2, rr: (t1 - close) / risk, rr2: (t2 - close) / risk,
+    resistance: resistance > close * 1.01 && resistance < t1 ? resistance : null
+  };
+
+  const checks = [
+    {label: "Above 20-day MA", val: `${money(close)} vs ${money(sma20)}`, ok: above},
+    {label: "Crossed 20-day MA in last 3 days", val: crossed ? "Yes" : "No", ok: crossed},
+    {label: "Volume spike (2x+)", val: volRatio.toFixed(1) + "x avg", ok: volRatio >= 2 ? true : volRatio >= 1.5 ? null : false},
+    {label: "RSI(14) in 30–70", val: rs.toFixed(0), ok: rsiOk},
+    {label: "MACD momentum", val: macdCross ? "Fresh cross" : (m[i] > sig[i] ? "Above signal" : "Below signal"), ok: m[i] > sig[i] ? true : hist[i] > hist[i-1] ? null : false},
+    {label: "Volume up on green days", val: udRatio.toFixed(1) + "x", ok: udRatio > 1.2 ? true : udRatio >= 0.9 ? null : false},
+    {label: "Above 50-day MA", val: isNaN(sma50) ? "—" : money(sma50), ok: isNaN(sma50) ? null : close > sma50}
+  ];
+  return {sym, bars, close, chg: close / prev - 1, sma20, sma50, rsi: rs, volRatio, macd: m[i], signal: sig[i], hist: hist[i], macdCross, crossed, udRatio,
+          atr: a, support, resistance, score, fails, eligible: fails.length === 0, plan, checks, date: bars[i].d};
+}
+
+/* ================= data providers ================= */
+class RateLimit extends Error {}
+const AV = {
+  last: 0,
+  calls(){ const d = LS.get("calls", {}); return d.day === today() ? d.n : 0; },
+  bump(){ const d = LS.get("calls", {}); LS.set("calls", {day: today(), n: (d.day === today() ? d.n : 0) + 1}); },
+  async get(params){
+    const wait = this.last + 1200 - Date.now(); if (wait > 0) await sleep(wait);
+    this.last = Date.now();
+    const u = new URL("https://www.alphavantage.co/query");
+    for (const [k, v] of Object.entries({...params, apikey: cfg.avKey})) u.searchParams.set(k, v);
+    let res;
+    try{ res = await fetch(u); }catch{ throw new Error("Couldn't reach Alpha Vantage. Check your connection."); }
+    this.bump();
+    const j = await res.json();
+    if (j.Note || j.Information) throw new RateLimit(j.Note || j.Information);
+    if (j["Error Message"]) throw new Error(j["Error Message"]);
+    return j;
+  },
+  cached(key){ const c = LS.get("c." + key, null); return c && c.day === today() ? c.data : null; },
+  store(key, data){ LS.set("c." + key, {day: today(), data}); },
+  async movers(){
+    let j = this.cached("movers");
+    if (!j){ j = await this.get({function: "TOP_GAINERS_LOSERS"}); this.store("movers", j = {g: j.top_gainers || [], a: j.most_actively_traded || []}); }
+    const ok = x => /^[A-Z]{1,5}$/.test(x.ticker) && +x.price >= 5 && +x.volume >= 1e6 && parseFloat(x.change_percentage) > 0 && parseFloat(x.change_percentage) < 40;
+    return [...new Set([...j.g.filter(ok), ...j.a.filter(ok)].map(x => x.ticker))];
+  },
+  async daily(sym, allowFetch){
+    let bars = this.cached("d." + sym);
+    if (bars) return {bars, fetched: false};
+    if (!allowFetch) return null;
+    const j = await this.get({function: "TIME_SERIES_DAILY", symbol: sym, outputsize: "compact"});
+    const ts = j["Time Series (Daily)"] || {};
+    bars = Object.keys(ts).sort().map(d => ({d, o: +ts[d]["1. open"], h: +ts[d]["2. high"], l: +ts[d]["3. low"], c: +ts[d]["4. close"], v: +ts[d]["5. volume"]}));
+    this.store("d." + sym, bars);
+    return {bars, fetched: true};
+  },
+  async news(sym){
+    let feed = this.cached("n." + sym);
+    if (!feed){
+      const j = await this.get({function: "NEWS_SENTIMENT", tickers: sym, limit: "30", sort: "LATEST"});
+      feed = (j.feed || []).slice(0, 15).map(f => {
+        const ts = (f.ticker_sentiment || []).find(t => t.ticker === sym) || {};
+        return {title: f.title, url: f.url, source: f.source, time: f.time_published, summary: (f.summary || "").slice(0, 280),
+                score: +ts.ticker_sentiment_score || 0, label: ts.ticker_sentiment_label || f.overall_sentiment_label || "", rel: +ts.relevance_score || 0};
+      });
+      this.store("n." + sym, feed);
+    }
+    return feed;
+  }
+};
+
+const Demo = {
+  // Synthetic random-walk prices so the full pipeline can be tried without keys.
+  rng(seed){ return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; },
+  series(seed, breakout){
+    const r = this.rng(seed); let p = 40 + r() * 160; const bars = []; const d0 = Date.now() - 100 * 864e5;
+    for (let k = 0; k < 100; k++){
+      const drift = breakout && k > 96 ? 0.022 : breakout && k > 70 ? -0.002 : (r() - 0.48) * 0.004;
+      const o = p; p = p * (1 + drift + (r() - 0.5) * 0.03);
+      const h = Math.max(o, p) * (1 + r() * 0.012), l = Math.min(o, p) * (1 - r() * 0.012);
+      const v = Math.round((2e6 + r() * 1e6) * (breakout && k > 96 ? 2.6 : 1));
+      bars.push({d: new Date(d0 + k * 864e5).toISOString().slice(0, 10), o, h, l, c: p, v});
+    }
+    return bars;
+  }
+};
+
+/* ================= DeepSeek via OpenRouter ================= */
+async function askDeepSeek(a, news){
+  const heads = news.slice(0, 12).map(n => `- [${fmtTime(n.time)}] ${n.source}: ${n.title} (AV sentiment ${n.score.toFixed(2)} ${n.label})`).join("\n") || "- No headlines found.";
+  const prompt = `Ticker: ${a.sym}. Data date: ${a.date}.
+Technicals: close ${a.close.toFixed(2)}, 1-day ${pct(a.chg)}, 20-day MA ${a.sma20.toFixed(2)}, 50-day MA ${isNaN(a.sma50) ? "n/a" : a.sma50.toFixed(2)}, RSI(14) ${a.rsi.toFixed(1)}, MACD ${a.macd.toFixed(3)} vs signal ${a.signal.toFixed(3)}, volume ${a.volRatio.toFixed(2)}x 20-day avg, up/down-day volume ratio ${a.udRatio.toFixed(2)}, 10-day support ${a.support.toFixed(2)}, 60-day high ${a.resistance.toFixed(2)}.
+Proposed plan: entry ${a.plan.entry.toFixed(2)}, stop ${a.plan.stop.toFixed(2)}, target ${a.plan.t1.toFixed(2)}, stretch ${a.plan.t2.toFixed(2)}.
+Recent headlines (newest first):
+${heads}
+
+Analyze sentiment around ${a.sym} in the last 48 hours using only these headlines and your background knowledge of the company. What are traders talking about? Any earnings surprises, product news, upgrades, insider buying? Is the hype justified by fundamentals? Rate the bullish bias 1-10 for a 2-4 week swing long.
+Reply with JSON only:
+{"bullish": <1-10 integer>, "why": "<2-3 sentences on why it's moving>", "catalysts": ["<short>", ...], "hype": "justified|partly|not justified", "hype_note": "<1 sentence>", "risks": ["<short>", ...], "verdict": "BUY|WAIT|PASS"}`;
+  let res;
+  try{
+    res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {"Authorization": "Bearer " + cfg.orKey, "Content-Type": "application/json", "X-Title": "Vegas"},
+      body: JSON.stringify({model: cfg.model, temperature: 0.3, messages: [
+        {role: "system", content: "You are VEGAS, a disciplined swing-trade analyst. Be skeptical of hype, specific about catalysts, and honest when headlines are thin. Output strict JSON."},
+        {role: "user", content: prompt}]})
+    });
+  }catch{ throw new Error("Couldn't reach OpenRouter."); }
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(j.error?.message || "OpenRouter error " + res.status);
+  const txt = j.choices?.[0]?.message?.content || "";
+  const m = txt.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error("The AI reply wasn't readable.");
+  const o = JSON.parse(m[0]);
+  o.bullish = clamp(Math.round(+o.bullish || 5), 1, 10);
+  return o;
+}
+function fmtTime(t){ if (!t) return ""; const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/.exec(t); if (!m) return t; return new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:00Z`).toLocaleString(undefined, {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}); }
+
+/* ================= scan pipeline ================= */
+async function runScan(demo, progress){
+  const results = [];
+  let note = "";
+  if (demo){
+    const names = ["DEMO-A", "DEMO-B", "DEMO-C", "DEMO-D", "DEMO-E", "DEMO-F"];
+    const base = Math.floor(Math.random() * 1e6), hot = Math.floor(Math.random() * names.length);
+    for (let k = 0; k < names.length; k++){
+      progress(`Reading <b>${names[k]}</b>`, k + 1, names.length);
+      await sleep(220);
+      results.push(analyze(names[k], Demo.series(base + k * 7919, k === hot)));
+    }
+  } else {
+    let universe = [];
+    if (cfg.movers){
+      progress("Checking today's <b>top movers</b>", 0, 0);
+      try{ universe = (await AV.movers()).slice(0, 6); }
+      catch(e){ if (e instanceof RateLimit) throw e; note = "Couldn't load market movers; scanned your watchlist only."; }
+    }
+    universe = [...new Set([...universe, ...cfg.watch])];
+    let fetched = 0;
+    for (let k = 0; k < universe.length; k++){
+      const sym = universe[k];
+      progress(`Reading <b>${sym}</b>`, k + 1, universe.length);
+      try{
+        const r = await AV.daily(sym, fetched < cfg.maxScan);
+        if (!r) continue;
+        if (r.fetched) fetched++;
+        if (r.bars.length >= 60) results.push(analyze(sym, r.bars));
+      }catch(e){
+        if (e instanceof RateLimit){ note = "Alpha Vantage's daily limit was hit, so this pick uses the tickers it could read."; break; }
+      }
+    }
+    if (!results.length) throw new Error(note || "No price data came back. Check your Alpha Vantage key in Settings.");
+  }
+  results.sort((x, y) => (y.eligible - x.eligible) || (y.score - x.score));
+  const pick = results.find(r => r.eligible) || null;
+  const out = {pick, results, demo, note, news: [], ai: null, aiErr: ""};
+  if (pick && !demo) await enrich(out, progress);
+  out.conf = confidence(out);
+  return out;
+}
+async function enrich(out, progress){
+  const a = out.pick;
+  progress(`Pulling headlines for <b>${a.sym}</b>`, 0, 0);
+  try{ out.news = await AV.news(a.sym); }catch(e){ out.news = []; }
+  if (cfg.orKey){
+    progress(`Asking DeepSeek about <b>${a.sym}</b>`, 0, 0);
+    try{ out.ai = await askDeepSeek(a, out.news); }catch(e){ out.aiErr = e.message; }
+  }
+}
+function confidence(o){
+  if (!o.pick) return 0;
+  const tech = o.pick.score / 10;
+  return clamp(Math.round(o.ai ? tech * 0.6 + o.ai.bullish * 0.4 : tech), 1, 10);
+}
+function outcome(conf, hasPick){
+  if (!hasPick || conf < 5) return {sym: ["🍋", "BAR", "🔔"], cls: "lose", text: "No bet. Nothing passed the filters cleanly today, so skip this round."};
+  if (conf >= 8) return {sym: ["7", "7", "7"], cls: "jackpot", text: "JACKPOT · High-conviction setup"};
+  if (conf >= 6) return {sym: ["💎", "💎", "💎"], cls: "win", text: "WINNER · Solid setup, follow the plan"};
+  return {sym: ["🍒", "🍒", "🔔"], cls: "push", text: "PUSH · Borderline. Use a smaller size or wait for confirmation"};
+}
+
+/* ================= sound & haptics ================= */
+const Sound = {
+  ctx: null,
+  ac(){ if (!cfg.sound) return null; if (!this.ctx){ try{ this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch{ return null; } } if (this.ctx.state === "suspended") this.ctx.resume(); return this.ctx; },
+  tone(f, t0, dur, type = "sine", g = 0.12){
+    const c = this.ac(); if (!c) return;
+    const o = c.createOscillator(), a = c.createGain(); o.type = type; o.frequency.value = f;
+    const t = c.currentTime + t0; a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(g, t + 0.005); a.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(a).connect(c.destination); o.start(t); o.stop(t + dur + 0.02);
+  },
+  tick(){ this.tone(1800 + Math.random() * 300, 0, 0.025, "square", 0.025); },
+  clunk(){ this.tone(110, 0, 0.18, "triangle", 0.25); this.tone(70, 0.03, 0.2, "sine", 0.2); },
+  thud(k){ this.tone(240 + k * 60, 0, 0.12, "triangle", 0.18); },
+  win(){ [523, 659, 784, 1047].forEach((f, k) => this.tone(f, k * 0.09, 0.3, "sine", 0.12)); },
+  jackpot(){ [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, k) => { this.tone(f, k * 0.08, 0.35, "sine", 0.1); this.tone(f * 2, k * 0.08, 0.2, "triangle", 0.03); }); },
+  lose(){ this.tone(330, 0, 0.25, "sine", 0.1); this.tone(247, 0.18, 0.4, "sine", 0.1); }
+};
+const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch{} };
+
+/* ================= reels ================= */
+const SYMS = ["7", "🍒", "BAR", "💎", "🔔", "🍋"];
+const L = SYMS.length;
+const reels = [...document.querySelectorAll(".reel")].map((el, r) => {
+  const order = SYMS.slice(r * 2).concat(SYMS.slice(0, r * 2));
+  const strip = el.querySelector(".strip");
+  strip.innerHTML = Array.from({length: L * 4}, (_, k) => {
+    const s = order[k % L];
+    return `<div class="cell">${s === "7" ? '<span class="sym-7">7</span>' : s === "BAR" ? '<span class="sym-bar">BAR</span>' : s}</div>`;
+  }).join("");
+  return {el, strip, order, pos: r * 1.0, speed: 0, mode: "idle", lastCell: 0, lastTick: 0, anim: null};
+});
+function cellH(){ return reels[0].strip.firstElementChild.getBoundingClientRect().height || 88; }
+function renderReel(R){
+  const H = cellH(), winH = R.el.clientHeight;
+  const disp = ((R.pos % L) + L) % L;
+  R.strip.style.transform = `translate3d(0,${(winH - H) / 2 - (disp + L) * H}px,0)`;
+}
+let rafOn = false, lastT = 0;
+function loop(t){
+  const dt = Math.min(0.05, (t - (lastT || t)) / 1000); lastT = t;
+  let active = false;
+  for (const R of reels){
+    if (R.mode === "spin"){ R.speed = Math.min(22, R.speed + 60 * dt); R.pos -= R.speed * dt; active = true; }
+    else if (R.mode === "stop" && R.anim){
+      const a = R.anim, k = clamp((t - a.t0) / a.dur, 0, 1);
+      const e = 1 + 2.2 * Math.pow(k - 1, 3) + 1.2 * Math.pow(k - 1, 2); // easeOutBack
+      R.pos = a.from + (a.to - a.from) * e; active = true;
+      if (k >= 1){ R.pos = a.to; R.mode = "idle"; R.anim = null; a.done(); }
+    }
+    const cell = Math.floor(R.pos);
+    if (cell !== R.lastCell){ R.lastCell = cell; if (t - R.lastTick > 45){ R.lastTick = t; Sound.tick(); } }
+    renderReel(R);
+  }
+  if (active) requestAnimationFrame(loop); else { rafOn = false; lastT = 0; }
+}
+function kick(){ if (!rafOn){ rafOn = true; requestAnimationFrame(loop); } }
+function startReels(){
+  reels.forEach((R, k) => setTimeout(() => { R.mode = "spin"; R.speed = 4; R.strip.classList.add("blur"); kick(); }, k * 90));
+}
+function stopReels(targets){
+  return Promise.all(reels.map((R, k) => new Promise(done => {
+    setTimeout(() => {
+      const t = R.order.indexOf(targets[k]);
+      const p = R.pos, travel = 2 * L;
+      const to = p - travel - ((((p - travel - t) % L) + L) % L);
+      R.strip.classList.remove("blur");
+      R.mode = "stop"; R.anim = {from: p, to, t0: performance.now(), dur: 900, done: () => { Sound.thud(k); buzz(12); done(); }};
+      kick();
+    }, 350 + k * 420);
+  })));
+}
+reels.forEach(renderReel);
+addEventListener("resize", () => reels.forEach(renderReel));
+
+/* ================= lever ================= */
+const lever = $("#lever"), knob = lever.querySelector(".knob"), rod = lever.querySelector(".rod");
+let drag = null;
+function setLever(y){ knob.style.transform = `translateY(${y}px)`; rod.style.height = Math.max(0, y) + "px"; }
+function travel(){ return lever.clientHeight - 40; }
+lever.addEventListener("pointerdown", e => { if (busy) return; drag = {y0: e.clientY, y: 0}; lever.classList.remove("springing"); lever.setPointerCapture(e.pointerId); });
+lever.addEventListener("pointermove", e => { if (!drag) return; drag.y = clamp(e.clientY - drag.y0, 0, travel()); setLever(drag.y); });
+lever.addEventListener("pointerup", () => {
+  if (!drag) return; const pulled = drag.y > travel() * 0.6 || drag.y < 4; drag = null;
+  if (pulled) pullAnim(); else springBack();
+});
+lever.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pullAnim(); } });
+function springBack(){ lever.classList.add("springing"); setLever(0); }
+function pullAnim(){
+  if (busy) return;
+  lever.classList.add("springing"); setLever(travel());
+  setTimeout(springBack, 260); spin(false);
+}
+
+/* ================= main flow ================= */
+let busy = false;
+const machine = $("#machine");
+function setStatus(html){ $("#statusText").innerHTML = html; }
+function progress(html, k, n){ setStatus(n ? `${html} · ${k}/${n}` : html); }
+
+async function spin(demo){
+  if (busy) return;
+  if (!demo && !cfg.avKey){ openSettings(); $("#avKey").focus(); return; }
+  busy = true; $("#spinBtn").disabled = $("#demoBtn").disabled = true;
+  machine.classList.add("spinning"); $("#window").classList.remove("win");
+  Sound.clunk(); buzz(20);
+  startReels();
+  const t0 = Date.now();
+  let res, err;
+  try{ res = await runScan(demo, progress); }catch(e){ err = e; }
+  const wait = 1500 - (Date.now() - t0); if (wait > 0) await sleep(wait);
+  const oc = outcome(res ? res.conf : 0, !!(res && res.pick));
+  setStatus(err ? "Spin failed" : "Landing…");
+  await stopReels(oc.sym);
+  machine.classList.remove("spinning");
+  busy = false; $("#spinBtn").disabled = $("#demoBtn").disabled = false;
+  if (err){ setStatus(`<span class="err">${esc(err.message)}</span>`); renderError(err); updateSub(); return; }
+  setStatus(res.pick ? `<b>${esc(res.pick.sym)}</b> · confidence ${res.conf}/10${demo ? " · demo" : ""}` : "No trade today");
+  if (oc.cls === "jackpot"){ Sound.jackpot(); buzz([30, 40, 30, 40, 60]); coins(); $("#window").classList.add("win"); }
+  else if (oc.cls === "win"){ Sound.win(); buzz([20, 30, 20]); $("#window").classList.add("win"); }
+  else Sound.lose();
+  last = res;
+  renderResult(res, oc);
+  renderRunners(res);
+  if (res.pick && !demo) saveHistory(res);
+  renderHistory(); updateSub();
+  $("#out").scrollIntoView({behavior: "smooth", block: "start"});
+}
+let last = null;
+
+/* ================= rendering ================= */
+function ringSVG(conf){
+  const r = 32, C = 2 * Math.PI * r, f = conf / 10;
+  const col = conf >= 8 ? "url(#gg)" : conf >= 6 ? "#30D158" : conf >= 5 ? "#FFD60A" : "#FF453A";
+  return `<div class="ring"><svg viewBox="0 0 76 76"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C9"/><stop offset="1" stop-color="#C08A22"/></linearGradient></defs>
+    <circle cx="38" cy="38" r="${r}" fill="none" stroke="rgba(118,118,128,.24)" stroke-width="8"/>
+    <circle cx="38" cy="38" r="${r}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C * f} ${C}"/></svg>
+    <div class="v"><div><b class="num">${conf}</b><span>of 10</span></div></div></div>`;
+}
+function chartSVG(a){
+  const bars = a.bars.slice(-60), W = 340, H = 150, P = 6, LBL = 54;
+  const c = a.bars.map(b => b.c), off = a.bars.length - bars.length;
+  const sma = bars.map((_, k) => smaAt(c, 20, off + k));
+  const vals = bars.flatMap(b => [b.h, b.l]).concat([a.plan.t1, a.plan.stop]);
+  const lo = Math.min(...vals) * 0.995, hi = Math.max(...vals) * 1.005;
+  const x = k => P + k * (W - LBL - P * 2) / (bars.length - 1), y = v => P + (hi - v) * (H - P * 2) / (hi - lo);
+  const line = arr => arr.map((v, k) => isNaN(v) ? "" : `${k && !isNaN(arr[k-1]) ? "L" : "M"}${x(k).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const closes = bars.map(b => b.c);
+  const area = line(closes) + `L${x(bars.length - 1)},${H}L${x(0)},${H}Z`;
+  const lvl = (v, col, t) => `<line x1="${P}" x2="${W - LBL + 2}" y1="${y(v)}" y2="${y(v)}" stroke="${col}" stroke-width="1" stroke-dasharray="3 3" opacity=".9"/>
+    <text x="${W - LBL + 6}" y="${y(v) + 4}" fill="${col}" font-size="10.5" font-weight="600" font-family="-apple-system,Inter,sans-serif">${t}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(a.sym)} price, last 60 days, with 20-day average, entry, target and stop">
+    <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2C14E" stop-opacity=".28"/><stop offset="1" stop-color="#F2C14E" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#ar)"/>
+    <path d="${line(sma)}" fill="none" stroke="rgba(235,235,245,.45)" stroke-width="1.2" stroke-dasharray="2 3"/>
+    <path d="${line(closes)}" fill="none" stroke="#F2C14E" stroke-width="2" stroke-linejoin="round"/>
+    ${lvl(a.plan.t1, "#30D158", "T " + a.plan.t1.toFixed(2))}
+    ${lvl(a.plan.entry, "#FFFFFF", "In " + a.plan.entry.toFixed(2))}
+    ${lvl(a.plan.stop, "#FF453A", "SL " + a.plan.stop.toFixed(2))}
+    <circle cx="${x(bars.length - 1)}" cy="${y(a.close)}" r="3.5" fill="#F2C14E" stroke="#000" stroke-width="1.5"/>
+  </svg>`;
+}
+function autoWhy(a){
+  const bits = [];
+  if (a.crossed) bits.push("just broke back above its 20-day average");
+  else if (a.close > a.sma20) bits.push(`is holding ${pct(a.close / a.sma20 - 1)} above its 20-day average`);
+  if (a.volRatio >= 1.5) bits.push(`on ${a.volRatio.toFixed(1)}x normal volume`);
+  if (a.macdCross) bits.push("with a fresh bullish MACD cross");
+  else if (a.macd > a.signal) bits.push("with MACD above its signal line");
+  return `${a.sym} ${bits.join(", ") || "shows mixed technicals"}. RSI is ${a.rsi.toFixed(0)}, so there's room to run before it's overbought.`;
+}
+function pickCard(o, a, oc, conf){
+  const p = a.plan, ai = o.ai;
+  const checks = a.checks.map(ch => `<li><span class="mark ${ch.ok === true ? "ok" : ch.ok === false ? "no" : "na"}">${ch.ok === true ? "✓" : ch.ok === false ? "✕" : "–"}</span><span class="l">${esc(ch.label)}</span><span class="r num">${esc(ch.val)}</span></li>`).join("");
+  const news = (o.news || []).slice(0, 5).map(n => `<li><span class="mark ${n.score > 0.15 ? "ok" : n.score < -0.15 ? "no" : "na"}">${n.score > 0.15 ? "▲" : n.score < -0.15 ? "▼" : "•"}</span>
+    <span class="l"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a><span class="meta">${esc(n.source)} · ${esc(fmtTime(n.time))}</span></span></li>`).join("");
+  return `
+  <div class="card reveal">
+    <div class="pickhead">
+      <div>
+        <div class="ticker">${esc(a.sym)}</div>
+        <div class="price num">${money(a.close)} <span class="chip ${a.chg >= 0 ? "up" : "down"}">${pct(a.chg)}</span> ${o.demo ? '<span class="chip demo">Demo data</span>' : ""}</div>
+        <div class="muted" style="margin-top:4px">Close of ${esc(a.date)}</div>
+      </div>
+      ${ringSVG(conf)}
+    </div>
+    <div class="grid num">
+      <div class="tile y"><div class="k">Entry zone</div><div class="val sm">${money(p.entryLo)}–${money(p.entryHi).slice(1)}</div><div class="s">Last ${money(p.entry)}</div></div>
+      <div class="tile g"><div class="k">Target</div><div class="val">${money(p.t1)}</div><div class="s">${pct(p.t1 / p.entry - 1)} · stretch ${money(p.t2)}</div></div>
+      <div class="tile r"><div class="k">Stop loss</div><div class="val">${money(p.stop)}</div><div class="s">${pct(p.stop / p.entry - 1)} · on a close</div></div>
+      <div class="tile"><div class="k">Risk / reward</div><div class="val">1 : ${p.rr.toFixed(1)}</div><div class="s">1 : ${p.rr2.toFixed(1)} at stretch</div></div>
+    </div>
+    ${p.resistance ? `<p class="muted" style="margin:10px 2px 0">Heads up: the 60-day high at ${money(p.resistance)} sits below the target and may act as resistance.</p>` : ""}
+    <div class="chart">${chartSVG(a)}</div>
+    <div class="verdict ${oc.cls}">${esc(oc.text)}</div>
+  </div>
+
+  <div class="card reveal" style="animation-delay:.08s">
+    <h3 class="h3">Why it's moving</h3>
+    <p class="prose">${esc(ai?.why || autoWhy(a))}</p>
+    ${ai?.catalysts?.length ? `<div class="chips">${ai.catalysts.slice(0, 5).map(c => `<span class="chip neutral">${esc(c)}</span>`).join("")}</div>` : ""}
+    ${ai ? `<p class="prose" style="margin-top:12px"><b>Hype check:</b> <span class="chip ${/^justified/i.test(ai.hype) ? "up" : /not/i.test(ai.hype) ? "down" : "neutral"}">${esc(ai.hype || "?")}</span> ${esc(ai.hype_note || "")}</p>
+           <p class="muted" style="margin-top:8px">DeepSeek bullish bias <b style="color:#fff">${ai.bullish}/10</b> · verdict <b style="color:#fff">${esc(ai.verdict || "—")}</b> · technical score ${a.score}/100</p>`
+         : `<p class="muted" style="margin-top:8px">${o.demo ? "Demo mode uses technicals only." : o.aiErr ? "AI analysis failed: " + esc(o.aiErr) : cfg.orKey ? "" : "Add an OpenRouter key in Settings for a DeepSeek sentiment read."} Technical score ${a.score}/100.</p>`}
+    ${o.note ? `<p class="muted" style="margin-top:8px">${esc(o.note)}</p>` : ""}
+  </div>
+
+  <div class="card reveal" style="animation-delay:.16s">
+    <h3 class="h3">Technicals</h3>
+    <ul class="list num">${checks}</ul>
+  </div>
+
+  ${news ? `<div class="card reveal" style="animation-delay:.24s"><h3 class="h3">Headlines</h3><ul class="list">${news}</ul></div>` : ""}
+  ${ai?.risks?.length ? `<div class="card reveal" style="animation-delay:.3s"><h3 class="h3">What kills the bet</h3><ul class="list">${ai.risks.slice(0, 5).map(r => `<li><span class="mark no">!</span><span class="l">${esc(r)}</span></li>`).join("")}</ul></div>` : ""}
+  ${!o.demo && !ai && !o.isMain ? `<button class="btn ghost" style="width:100%;margin-top:12px" id="askBtn">Get headlines &amp; DeepSeek read</button>` : ""}`;
+}
+function renderResult(o, oc){
+  const out = $("#out");
+  if (!o.pick){
+    out.innerHTML = `<div class="section-h">Result</div><div class="card reveal"><div class="verdict lose" style="margin-top:0">${esc(oc.text)}</div>
+      <p class="prose" style="margin-top:12px">Every ticker scanned either sits below its 20-day average or has RSI outside 30–70. The best pick today is no pick at all. Check the table below, or add more tickers to your watchlist.</p>
+      ${o.note ? `<p class="muted" style="margin-top:8px">${esc(o.note)}</p>` : ""}</div>`;
+    return;
+  }
+  o.isMain = true;
+  out.innerHTML = `<div class="section-h">Today's pick</div>` + pickCard(o, o.pick, oc, o.conf);
+}
+function renderRunners(o){
+  const rows = o.results.map((a, k) => `<li><button class="rowbtn" data-k="${k}">
+      <span class="score ${a.eligible && a.score >= 60 ? "hi" : ""} num">${a.score}</span>
+      <span class="l"><b>${esc(a.sym)}</b> <span class="muted num">${money(a.close)} · RSI ${a.rsi.toFixed(0)} · vol ${a.volRatio.toFixed(1)}x</span>
+        <span class="meta">${a.eligible ? (a === o.pick ? "Today's pick" : "Passes filters") : "✕ " + esc(a.fails.join(", "))}</span></span>
+      <span class="chev">›</span></button></li>`).join("");
+  $("#runners").innerHTML = `<div class="section-h">Scanned · ${o.results.length}</div><div class="card"><ul class="list">${rows}</ul></div>`;
+  $("#runners").querySelectorAll(".rowbtn").forEach(b => b.onclick = () => showOther(o, o.results[+b.dataset.k]));
+}
+function showOther(o, a){
+  if (a === o.pick){ renderResult(o, outcome(o.conf, true)); $("#out").scrollIntoView({behavior: "smooth"}); return; }
+  const sub = {pick: a, demo: o.demo, news: [], ai: null, aiErr: "", note: a.eligible ? "" : "This one fails the filters: " + a.fails.join(", ") + "."};
+  sub.conf = confidence(sub);
+  const draw = () => {
+    $("#out").innerHTML = `<div class="section-h">${esc(a.sym)} · runner-up</div>` + pickCard(sub, a, outcome(sub.conf, a.eligible), sub.conf);
+    const ask = $("#askBtn");
+    if (ask) ask.onclick = async () => {
+      if (!cfg.avKey) return openSettings();
+      ask.disabled = true; ask.textContent = "Reading the tape…";
+      await enrich(sub, () => {}); sub.conf = confidence(sub); sub.isMain = true; draw();
+    };
+  };
+  draw();
+  $("#out").scrollIntoView({behavior: "smooth", block: "start"});
+}
+function renderError(e){
+  $("#out").innerHTML = `<div class="section-h">Result</div><div class="card reveal"><p class="prose err">${esc(e.message)}</p>
+    <p class="muted" style="margin-top:8px">${e instanceof RateLimit ? "Free Alpha Vantage keys allow 25 calls a day. Cached tickers still work, or try again tomorrow." : "Open Settings to check your keys."}</p></div>`;
+}
+
+/* ================= history ================= */
+function saveHistory(o){
+  const h = LS.get("history", []);
+  const a = o.pick, p = a.plan;
+  const item = {day: today(), sym: a.sym, entry: p.entry, stop: p.stop, t1: p.t1, conf: o.conf};
+  if (h[0] && h[0].day === item.day && h[0].sym === item.sym) h[0] = item; else h.unshift(item);
+  LS.set("history", h.slice(0, 30));
+}
+function renderHistory(){
+  const h = LS.get("history", []);
+  if (!h.length){ $("#history").innerHTML = ""; return; }
+  $("#history").innerHTML = `<div class="section-h">Past spins</div><div class="card"><ul class="list num">${h.map(x => `<li>
+    <span class="score ${x.conf >= 8 ? "hi" : ""}">${x.conf}</span>
+    <span class="l"><b>${esc(x.sym)}</b> <span class="muted">${esc(x.day)}</span><span class="meta">In ${money(x.entry)} · T ${money(x.t1)} · SL ${money(x.stop)}</span></span></li>`).join("")}</ul></div>`;
+}
+
+/* ================= welcome ================= */
+function renderWelcome(){
+  if (cfg.avKey){ $("#out").innerHTML = ""; return; }
+  $("#out").innerHTML = `<div class="section-h">Get started</div><div class="card welcome reveal">
+    <p class="big">Place your first bet</p>
+    <p class="prose">Vegas scans for stocks that just broke above their 20-day average on heavy volume, with healthy RSI and MACD. It then has DeepSeek read the latest headlines and lands on <b>one</b> pick with an entry, a target and a stop.</p>
+    <p class="prose">Add a free Alpha Vantage key for real prices. An OpenRouter key adds the AI read. Or hit <b>Demo</b> to try it with made-up data.</p>
+    <button class="btn gold" style="width:100%;margin-top:14px" id="setupBtn">Add keys</button></div>`;
+  $("#setupBtn").onclick = openSettings;
+}
+
+/* ================= settings ================= */
+const sheet = $("#sheet"), veil = $("#veil");
+function openSettings(){
+  $("#avKey").value = cfg.avKey; $("#orKey").value = cfg.orKey; $("#model").value = LS.get("model", "");
+  $("#watch").value = LS.get("watch", DEFAULT_WATCH); $("#maxScan").value = cfg.maxScan;
+  $("#movers").setAttribute("aria-checked", String(cfg.movers));
+  sheet.hidden = veil.hidden = false;
+  requestAnimationFrame(() => { sheet.classList.add("open"); veil.classList.add("open"); });
+}
+function closeSettings(){
+  LS.set("avKey", $("#avKey").value.trim()); LS.set("orKey", $("#orKey").value.trim()); LS.set("model", $("#model").value.trim());
+  LS.set("watch", parseTickers($("#watch").value).join(", ")); LS.set("maxScan", clamp(parseInt($("#maxScan").value, 10) || 8, 2, 20));
+  LS.set("movers", $("#movers").getAttribute("aria-checked") === "true");
+  sheet.classList.remove("open"); veil.classList.remove("open");
+  setTimeout(() => { sheet.hidden = veil.hidden = true; }, 400);
+  if (!last) renderWelcome();
+  updateSub();
+}
+$("#setBtn").onclick = openSettings;
+$("#doneBtn").onclick = closeSettings;
+veil.onclick = closeSettings;
+addEventListener("keydown", e => { if (e.key === "Escape" && !sheet.hidden) closeSettings(); });
+$("#movers").onclick = e => { const b = e.currentTarget; b.setAttribute("aria-checked", String(b.getAttribute("aria-checked") !== "true")); };
+$("#clearCache").onclick = () => { LS.keys().filter(k => k.startsWith("c.")).forEach(k => LS.del(k)); $("#clearCache").textContent = "Cleared ✓"; };
+$("#clearHist").onclick = () => { LS.del("history"); renderHistory(); $("#clearHist").textContent = "Cleared ✓"; };
+
+function updateSub(){
+  const n = AV.calls();
+  $("#sub").textContent = cfg.avKey ? `Swing picks · ${n}/25 calls today` : "Swing picks · 2–4 week holds";
+}
+function updateSoundBtn(){
+  $("#soundBtn").innerHTML = cfg.sound
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+}
+$("#soundBtn").onclick = () => { LS.set("sound", !cfg.sound); updateSoundBtn(); if (cfg.sound) Sound.win(); };
+
+/* ================= coins ================= */
+function coins(){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("#fx"), x = cv.getContext("2d"), dpr = devicePixelRatio || 1;
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; x.scale(dpr, dpr);
+  const ps = Array.from({length: 90}, () => ({x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .3, vx: (Math.random() - .5) * 9, vy: -Math.random() * 12 - 4, r: 6 + Math.random() * 6, a: Math.random() * 6, va: (Math.random() - .5) * .4}));
+  const t0 = performance.now();
+  (function f(t){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of ps){
+      p.vy += .38; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      const w = Math.abs(Math.cos(p.a)) * p.r;
+      const g = x.createLinearGradient(p.x - w, p.y - p.r, p.x + w, p.y + p.r);
+      g.addColorStop(0, "#FFF3C9"); g.addColorStop(.5, "#F2C14E"); g.addColorStop(1, "#9C6B12");
+      x.fillStyle = g; x.beginPath(); x.ellipse(p.x, p.y, Math.max(1, w), p.r, 0, 0, Math.PI * 2); x.fill();
+    }
+    if (t - t0 < 2600) requestAnimationFrame(f); else x.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+/* ================= boot ================= */
+for (const id of ["#bulbsTop", "#bulbsBot"]) $(id).innerHTML = Array.from({length: 14}, (_, k) => `<i style="animation-delay:${(k % 7) * -0.23}s"></i>`).join("");
+$("#spinBtn").onclick = () => pullAnim();
+$("#demoBtn").onclick = () => spin(true);
+addEventListener("scroll", () => $("#hdr").classList.toggle("scrolled", scrollY > 4), {passive: true});
+updateSoundBtn(); updateSub(); renderWelcome(); renderHistory();
+</script>
+</body>
+</html>
